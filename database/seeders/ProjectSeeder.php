@@ -17,7 +17,8 @@ class ProjectSeeder extends Seeder
         Project::truncate();
 
         $project1 = Project::create([
-            'name' => 'Project 1',
+            'title' => 'Project 1',
+            'acronym' => 'PRJCT1',
             'description' => 'A sample description.',
         ]);
 
@@ -25,7 +26,8 @@ class ProjectSeeder extends Seeder
         $project1->addUser(2);
 
         $project2 = Project::create([
-            'name' => 'Project 2',
+            'title' => 'Project 2',
+            'acronym' => 'PRJCT2',
             'description' => 'A sample description.',
         ]);
 

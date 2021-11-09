@@ -19,9 +19,9 @@ class UserController extends Controller
      */
     public function index(ListUsersRequest $request)
     {
-        $users = User::where('firstname', 'like', '%' . $request->name . '%')
-            ->orWhere('lastname', 'like', '%' . $request->name . '%')
-            ->orWhere('email', 'like', '%' . $request->name . '%')
+        $users = User::where('firstname', 'ilike', '%' . $request->name . '%')
+            ->orWhere('lastname', 'ilike', '%' . $request->name . '%')
+            ->orWhere('email', 'ilike', '%' . $request->name . '%')
             ->get();
 
         $users = collect($users)->filter(function ($user) use ($request) {

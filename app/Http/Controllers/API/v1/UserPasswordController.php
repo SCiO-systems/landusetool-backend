@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Hash;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserPassword\UpdateUserPasswordRequest;
-use App\Models\User;
-use Hash;
 
 class UserPasswordController extends Controller
 {

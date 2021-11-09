@@ -21,6 +21,7 @@ class InitialSchema extends Migration
             $table->string('password')->nullable();
             $table->string('firstname')->nullable();
             $table->string('lastname')->nullable();
+            $table->string('avatar_url')->nullable();
             $table->string('identity_provider')->default(User::IDENTITY_PROVIDER_LOCAL);
             $table->string('identity_provider_external_id')->nullable()->default(null);
             $table->timestamps();
