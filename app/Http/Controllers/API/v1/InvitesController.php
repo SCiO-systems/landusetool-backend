@@ -18,7 +18,7 @@ class InvitesController extends Controller
      */
     public function index(ListInvitesRequest $request)
     {
-        $invites = $request->user()->invites()->paginate(15);
+        $invites = $request->user()->invites()->all();
 
         return ProjectInviteResource::collection($invites);
     }

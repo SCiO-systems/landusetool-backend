@@ -39,7 +39,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function invites()
     {
-        return $this->belongsToMany(ProjectInvite::class, 'project_invite', 'user_id', 'project_id')
-            ->wherePivot('status', '=', ProjectInvite::STATUS_PENDING);
+        return $this->hasMany(ProjectInvite::class)->where('status', ProjectInvite::STATUS_PENDING);
     }
 }
