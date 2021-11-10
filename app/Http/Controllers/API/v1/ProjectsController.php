@@ -20,7 +20,7 @@ class ProjectsController extends Controller
      */
     public function index(ListProjectsRequest $request)
     {
-        $projects = $request->user()->projects()->with('users')->paginate(15);
+        $projects = $request->user()->projects()->paginate(15);
 
         return ProjectResource::collection($projects);
     }
@@ -47,7 +47,7 @@ class ProjectsController extends Controller
      */
     public function show(ShowProjectRequest $request, Project $project)
     {
-        $project = $request->user()->projects()->findOrFail($project->id);
+        $project = $request->user()->projects()->with('users')->findOrFail($project->id);
 
         return new ProjectResource($project);
     }

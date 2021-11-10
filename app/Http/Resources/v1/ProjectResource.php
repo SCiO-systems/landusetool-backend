@@ -20,6 +20,7 @@ class ProjectResource extends JsonResource
             'acronym' => $this->acronym,
             'description' => $this->description,
             'users' => ProjectUserResource::collection($this->whenLoaded('users')),
+            'role' => $this->pivot->role ?? null,
         ];
     }
 }
