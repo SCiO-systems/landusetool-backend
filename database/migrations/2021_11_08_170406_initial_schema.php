@@ -51,6 +51,8 @@ class InitialSchema extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('status')->default(ProjectInvite::STATUS_PENDING);
             $table->timestamps();
+
+            $table->unique(['project_id', 'user_id']);
         });
     }
 
