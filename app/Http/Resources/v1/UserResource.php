@@ -19,7 +19,9 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'firstname' => $this->firstname,
             'lastname' => $this->lastname,
-            'avatar_url' => secure_asset("storage/" . $this->avatar_url),
+            'avatar_url' => empty($this->avatar_url)
+                ? null
+                : asset("storage/" . $this->avatar_url),
             'identity_provider' => $this->identity_provider,
         ];
     }
