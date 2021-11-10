@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Users\CreateUserRequest;
-use App\Http\Requests\Users\ListUsersRequest;
-use App\Http\Requests\Users\UpdateUserRequest;
-use App\Http\Requests\Users\ShowUserRequest;
-use App\Http\Resources\v1\UserResource;
 use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\v1\UserResource;
+use App\Http\Requests\Users\ShowUserRequest;
+use App\Http\Requests\Users\ListUsersRequest;
+use App\Http\Requests\Users\CreateUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -19,9 +19,9 @@ class UserController extends Controller
      */
     public function index(ListUsersRequest $request)
     {
-        $users = User::where('firstname', 'ilike', '%' . $request->name . '%')
-            ->orWhere('lastname', 'ilike', '%' . $request->name . '%')
-            ->orWhere('email', 'ilike', '%' . $request->name . '%')
+        $users = User::where('firstname', 'like', '%' . $request->name . '%')
+            ->orWhere('lastname', 'like', '%' . $request->name . '%')
+            ->orWhere('email', 'like', '%' . $request->name . '%')
             ->get();
 
         $users = collect($users)->filter(function ($user) use ($request) {
