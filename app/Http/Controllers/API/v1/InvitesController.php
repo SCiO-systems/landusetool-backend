@@ -18,7 +18,7 @@ class InvitesController extends Controller
      */
     public function index(ListInvitesRequest $request)
     {
-        $invites = $request->user()->invites()->all();
+        $invites = $request->user()->invites()->get();
 
         return ProjectInviteResource::collection($invites);
     }
