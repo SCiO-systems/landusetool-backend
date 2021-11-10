@@ -33,7 +33,8 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'description' => 'string',
+            'description' => 'nullable|string',
+            'acronym' => 'required|string',
         ];
     }
 }
