@@ -31,6 +31,6 @@ class LogRequest
             $response->getContent()
         ));
 
-        return $next($request);
+        return $response;
     }
 }
