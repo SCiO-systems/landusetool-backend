@@ -52,7 +52,6 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             ->only(['index', 'update']);
 
         // User avatar management. Issue with file upload using PUT, must use POST.
-        Route::get('/users/{user}/avatar', [UserAvatarController::class, 'show']);
         Route::post('/users/{user}/avatar', [UserAvatarController::class, 'update']);
         Route::delete('/users/{user}/avatar', [UserAvatarController::class, 'destroy']);
 

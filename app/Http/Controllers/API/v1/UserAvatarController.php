@@ -6,23 +6,11 @@ use Storage;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\UserAvatarResource;
-use App\Http\Requests\UserAvatar\ShowUserAvatarRequest;
 use App\Http\Requests\UserAvatar\DeleteUserAvatarRequest;
 use App\Http\Requests\UserAvatar\UpdateUserAvatarRequest;
 
 class UserAvatarController extends Controller
 {
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ShowUserAvatarRequest $request, User $user)
-    {
-        return new UserAvatarResource($user);
-    }
-
     /**
      * Update the specified resource in storage.
      *

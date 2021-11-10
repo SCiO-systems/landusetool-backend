@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use Illuminate\Http\Request;
+use App\Models\Project;
+use App\Models\ProjectInvite;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ProjectInviteResource;
 use App\Http\Requests\Invites\ListInvitesRequest;
 use App\Http\Requests\Invites\UpdateInviteRequest;
-use App\Models\Project;
-use App\Models\ProjectInvite;
 
 class InvitesController extends Controller
 {
