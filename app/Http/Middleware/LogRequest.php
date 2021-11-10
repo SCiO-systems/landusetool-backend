@@ -20,13 +20,14 @@ class LogRequest
         $response = $next($request);
 
         Log::info(sprintf(
-            "[IP: %s - USER: %s] | %s %s | STATUS: %s | BODY: %s | RESPONSE: %s",
+            "[IP: %s - USER: %s] | %s %s | STATUS: %s | BODY: %s | QS: %s | RESPONSE: %s",
             $request->ip(),
             $request->user()->getKey(),
             $request->method(),
             $request->path(),
             $response->getStatusCode(),
             $request->getContent(),
+            $request->getQueryString(),
             $response->getContent()
         ));
 
