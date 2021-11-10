@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\UserController;
+use App\Http\Controllers\API\v1\ProjectsController;
 use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
-use App\Http\Controllers\API\v1\ProjectsController;
 use App\Http\Controllers\API\v1\UserPasswordController;
-use App\Http\Controllers\ProjectInvitesController;
+use App\Http\Controllers\API\v1\ProjectInvitesController;
 
 // API v1
 Route::prefix('v1')->name('api.v1.')->group(function () {
