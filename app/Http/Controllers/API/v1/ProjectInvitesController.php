@@ -9,6 +9,7 @@ use App\Http\Resources\v1\ProjectInviteResource;
 use App\Http\Requests\ProjectInvites\ListProjectInvitesRequest;
 use App\Http\Requests\ProjectInvites\CreateProjectInviteRequest;
 use App\Http\Requests\ProjectInvites\DeleteProjectInviteRequest;
+use App\Http\Resources\v1\UserResource;
 
 class ProjectInvitesController extends Controller
 {
@@ -33,9 +34,13 @@ class ProjectInvitesController extends Controller
      */
     public function store(CreateProjectInviteRequest $request, Project $project)
     {
-        $project->inviteUsers($request->user_ids);
+        $users = collect($request->user_ids)->unique();
+        $existingUsers = $project->users()->whereIn('user_id', $users)->get();
+        $project->inviteUsers($users);
 
-        return response()->json(null, 204);
+        return response()->json([
+            'existing_users' => UserResource::collection($existingUsers)
+        ], 200);
     }
 
     /**

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
 {
@@ -29,14 +31,18 @@ class Project extends Model
         }
     }
 
-    public function inviteUsers($userIds = [])
+    public function inviteUsers($users)
     {
-        foreach ($userIds as $id) {
-            ProjectInvite::create([
-                'project_id' => $this->id,
-                'user_id' => $id,
-                'status' => ProjectInvite::STATUS_PENDING,
-            ]);
+        foreach ($users as $id) {
+            try {
+                ProjectInvite::create([
+                    'project_id' => $this->id,
+                    'user_id' => $id,
+                    'status' => ProjectInvite::STATUS_PENDING,
+                ]);
+            } catch (Exception $ex) {
+                Log::error('The user is already invited. ' . $ex->getMessage());
+            }
         }
     }
 
