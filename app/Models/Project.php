@@ -13,21 +13,21 @@ class Project extends Model
 
     protected $guarded = [];
 
-    public function addUser($userId, $role = User::ROLE_USER)
+    public function addUser($id, $role = User::ROLE_USER)
     {
         return ProjectUser::create([
             'project_id' => $this->id,
-            'user_id' => $userId,
+            'user_id' => $id,
             'role' => $role,
         ]);
     }
 
-    public function setUsers($userIds)
+    public function setUsers($users)
     {
         $this->users()->detach();
 
-        foreach ($userIds as $userId) {
-            $this->addUser($userId);
+        foreach ($users as $id) {
+            $this->addUser($id);
         }
     }
 
@@ -46,12 +46,10 @@ class Project extends Model
         }
     }
 
-    public function setOwner($userId)
+    public function setOwner($id)
     {
         ProjectUser::updateOrCreate([
-            'user_id' => $userId,
-            'project_id' => $this->id,
-            'role' => User::ROLE_OWNER
+            'user_id' => $id, 'project_id' => $this->id, 'role' => User::ROLE_OWNER
         ]);
     }
 
@@ -63,7 +61,14 @@ class Project extends Model
 
     public function owner()
     {
-        return $this->users()->wherePivot('role', '=', User::ROLE_OWNER)->first();
+        return $this->hasOneThrough(
+            User::class,
+            ProjectUser::class,
+            'project_id',
+            'id',
+            'id',
+            'user_id'
+        )->where('role', User::ROLE_OWNER);
     }
 
     public function invites()

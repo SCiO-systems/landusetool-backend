@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Projects;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DeleteProjectRequest extends FormRequest
@@ -15,11 +13,7 @@ class DeleteProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        $isProjectOwner = Auth::user()
-            ->projects()
-            ->where('project_id', $this->project->id)
-            ->where('role', User::ROLE_OWNER)
-            ->exists();
+        $isProjectOwner = $this->project->owner->id === $this->user()->id;
 
         return $isProjectOwner;
     }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Projects;
 
-use Auth;
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProjectRequest extends FormRequest
@@ -15,11 +13,7 @@ class UpdateProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        $isProjectOwner = Auth::user()
-            ->projects()
-            ->where('project_id', $this->project->id)
-            ->where('role', User::ROLE_OWNER)
-            ->exists();
+        $isProjectOwner = $this->project->owner->id === $this->user()->id;
 
         return $isProjectOwner;
     }
