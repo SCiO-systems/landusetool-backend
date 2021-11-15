@@ -75,4 +75,19 @@ class Project extends Model
     {
         return $this->hasMany(ProjectInvite::class);
     }
+
+    public function indicators()
+    {
+        return $this->belongsToMany(
+            Indicator::class,
+            'project_indicator',
+            'project_id',
+            'indicator_id'
+        );
+    }
+
+    public function focusAreas()
+    {
+        return $this->hasMany(FocusArea::class);
+    }
 }

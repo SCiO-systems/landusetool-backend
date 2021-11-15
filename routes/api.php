@@ -5,6 +5,7 @@ use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\UserController;
 use App\Http\Controllers\API\v1\InvitesController;
 use App\Http\Controllers\API\v1\ProjectsController;
+use App\Http\Controllers\API\v1\IndicatorsController;
 use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
 use App\Http\Controllers\API\v1\UserPasswordController;
@@ -51,6 +52,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         // Invites.
         Route::apiResource('invites', InvitesController::class)
             ->only(['index', 'update']);
+
+        // Indicators.
+        Route::apiResource('indicators', IndicatorsController::class)->only(['index']);
 
         // User avatar management. Issue with file upload using PUT, must use POST.
         Route::post('/users/{user}/avatar', [UserAvatarController::class, 'update']);
