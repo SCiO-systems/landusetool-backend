@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Log;
 use Closure;
 use Illuminate\Http\Request;
-use Log;
 
 class LogRequest
 {
@@ -19,16 +19,20 @@ class LogRequest
     {
         $response = $next($request);
 
+        // Add the fields to remove from the logs.
+        $body = json_encode($request->except(['password']));
+        $user = $request->user() !== null ? $request->user()->getKey() : 'GUEST';
+
         Log::info(sprintf(
-            "[IP: %s - USER: %s] | %s %s | STATUS: %s | BODY: %s | QS: %s | RESPONSE: %s",
+            "[IP: %s - USER: %s] | %s %s | BODY: %s | QS: %s | RESPONSE %s %s",
             $request->ip(),
-            $request->user()->getKey(),
+            $user,
             $request->method(),
             $request->path(),
-            $response->getStatusCode(),
-            $request->getContent(),
+            $body,
             $request->getQueryString(),
-            $response->getContent()
+            $response->getStatusCode(),
+            $response->getContent(),
         ));
 
         return $response;
