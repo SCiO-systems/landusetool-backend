@@ -10,9 +10,10 @@ use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
 use App\Http\Controllers\API\v1\UserPasswordController;
 use App\Http\Controllers\API\v1\ProjectInvitesController;
+use App\Http\Controllers\API\v1\Integrations\ScioController;
 
 // API v1
-Route::prefix('v1')->name('api.v1.')->group(function () {
+Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function () {
 
     // --- OAUTH ROUTES ---
     Route::prefix('oauth')->group(function () {
@@ -37,7 +38,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('/auth/token/check', [AuthController::class, 'check']);
 
     // Authenticated and authorized (store) routes.
-    Route::middleware(['auth.jwt', 'request.log'])->group(function () {
+    Route::middleware(['auth.jwt'])->group(function () {
 
         // User management.
         Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
@@ -54,7 +55,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             ->only(['index', 'update']);
 
         // Indicators.
-        Route::apiResource('indicators', IndicatorsController::class)->only(['index']);
+        Route::apiResource('indicators', IndicatorsController::class)->only(['index', 'store']);
+
+        // Load the LDN targets.
+        Route::get('/ldn_targets', [ScioController::class, 'listLDNTargets']);
 
         // User avatar management. Issue with file upload using PUT, must use POST.
         Route::post('/users/{user}/avatar', [UserAvatarController::class, 'update']);

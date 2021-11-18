@@ -13,7 +13,7 @@ class Indicator extends Model
 
     public function parent()
     {
-        return Indicator::find($this->parent_indicator_id);
+        return $this->belongsTo(Indicator::class, 'parent_indicator_id');
     }
 
     public function children()
