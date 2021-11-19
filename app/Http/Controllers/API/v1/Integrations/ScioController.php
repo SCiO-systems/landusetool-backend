@@ -38,7 +38,7 @@ class ScioController extends Controller
         $status = $response->json('code');
         $content = $response->json('response');
 
-        if ($response->ok()) {
+        if ($status !== '404') {
             Cache::put($cacheKey, $content, $this->cacheTtl);
         }
 
