@@ -40,8 +40,7 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
     // Authenticated and authorized (store) routes.
     Route::middleware(['auth.jwt'])->group(function () {
 
-        // User management.
-        Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
+        // PROJECTS
 
         // Project management.
         Route::apiResource('projects', ProjectsController::class);
@@ -54,11 +53,31 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         Route::apiResource('invites', InvitesController::class)
             ->only(['index', 'update']);
 
+        // INDICATORS
+
         // Indicators.
         Route::apiResource('indicators', IndicatorsController::class)->only(['index', 'store']);
 
-        // Load the LDN targets.
-        Route::get('/ldn_targets', [ScioController::class, 'listLDNTargets']);
+        // POLYGONS
+
+        // Admin level area polygons.
+        Route::get('polygons/admin_level_areas', [
+            ScioController::class, 'getAdminLevelAreaPolygons'
+        ])->name('polygons.admin_level_areas');
+
+        // Polygons by coordinates.
+        Route::post('polygons/coordinates', [ScioController::class, 'getPolygonsByCoordinates'])
+            ->name('polygons.coordinates');
+
+        // LDN TARGETS
+
+        // LDN targets.
+        Route::get('/ldn_targets', [ScioController::class, 'listLDNTargets'])->name('ldn_targets');
+
+        // USER
+
+        // User management.
+        Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
 
         // User avatar management. Issue with file upload using PUT, must use POST.
         Route::post('/users/{user}/avatar', [UserAvatarController::class, 'update']);

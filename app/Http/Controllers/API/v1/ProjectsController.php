@@ -2,17 +2,36 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Http;
 use App\Models\Project;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Utilities\SCIO\TokenGenerator;
+use App\Utilities\SCIO\CoordsIDGenerator;
 use App\Http\Resources\v1\ProjectResource;
 use App\Http\Requests\Projects\ShowProjectRequest;
 use App\Http\Requests\Projects\ListProjectsRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\DeleteProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
+use Exception;
 
 class ProjectsController extends Controller
 {
+
+    protected $cacheTtl;
+    protected $baseURI;
+    protected $requestTimeout;
+    protected $token;
+
+    public function __construct()
+    {
+        $this->token = (new TokenGenerator())->getToken();
+        $this->cacheTtl = env('CACHE_TTL_SECONDS', 3600);
+        $this->baseURI = env('SCIO_SERVICES_BASE_API_URL', '');
+        $this->requestTimeout = env('REQUEST_TIMEOUT_SECONDS', 10);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -33,8 +52,47 @@ class ProjectsController extends Controller
      */
     public function store(CreateProjectRequest $request)
     {
-        $project = Project::create($request->only('title', 'acronym', 'description'));
+        // Save the starting details.
+        // Use the frontend details to generate unique identifier for the frontend.
+        // Generate tif images using identifier and country iso 3.
+        // Save the urls to the database.
+
+        $project = Project::create(
+            $request->only(
+                'title',
+                'acronym',
+                'description',
+                'country_iso_code_3',
+                'administrative_level'
+            )
+        );
         $project->setOwner($request->user()->id);
+
+        $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
+        $identifier = (new CoordsIDGenerator($coordinates))->getId();
+
+        $body = [
+            'identifier' => $identifier,
+            'country_ISO' => $request->country_iso_code_3,
+            'area' => $request->polygon,
+        ];
+
+        $response = Http::timeout($this->requestTimeout)
+            ->withToken($this->token)
+            ->acceptJson()
+            ->asJson()
+            ->post("$this->baseURI/tifCropperByROI", $body);
+
+        if ($response->failed()) {
+            return response()->json([
+                'error' => 'Failed to contact remote service for generating TIF images.'
+            ], $response->status());
+        }
+
+        if ($response->ok()) {
+            $project->tif_images = $response->json();
+            $project->save();
+        }
 
         return new ProjectResource($project);
     }

@@ -47,7 +47,8 @@ class InitialSchema extends Migration
             $table->string('acronym')->nullable();
             $table->text('description')->nullable();
             $table->string('country_iso_code_3')->nullable();
-            $table->string('administrative_area')->nullable();
+            $table->string('administrative_level')->nullable();
+            $table->json('tif_images')->nullable();
             $table->timestamps();
         });
 

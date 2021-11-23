@@ -19,8 +19,11 @@ class ProjectResource extends JsonResource
             'title' => $this->title,
             'acronym' => $this->acronym,
             'description' => $this->description,
+            'country_iso_code_3' => $this->country_iso_code_3,
+            'administrative_level' => $this->administrative_level,
             'users' => ProjectUserResource::collection($this->whenLoaded('users')),
             'role' => $this->pivot->role ?? null,
+            'tif_images' => $this->tif_images,
         ];
     }
 }

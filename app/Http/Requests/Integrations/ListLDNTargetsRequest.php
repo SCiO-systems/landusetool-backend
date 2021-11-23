@@ -25,7 +25,7 @@ class ListLDNTargetsRequest extends FormRequest
     public function rules()
     {
         return [
-            'country' => 'string|required'
+            'country_iso_code_3' => 'string|required'
         ];
     }
 }

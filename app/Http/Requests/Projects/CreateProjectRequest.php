@@ -28,6 +28,9 @@ class CreateProjectRequest extends FormRequest
             'title' => 'required|string',
             'acronym' => 'required|string',
             'description' => 'nullable|string',
+            'country_iso_code_3' => 'string|required',
+            'administrative_level' => 'numeric|required',
+            'polygon' => 'required'
         ];
     }
 }
