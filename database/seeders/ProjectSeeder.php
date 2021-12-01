@@ -20,6 +20,7 @@ class ProjectSeeder extends Seeder
             'title' => 'Project 1',
             'acronym' => 'PRJCT1',
             'description' => 'A sample description.',
+            'country_iso_code_3' => 'GRC',
         ]);
 
         $project1->setOwner(1);
@@ -29,6 +30,7 @@ class ProjectSeeder extends Seeder
             'title' => 'Project 2',
             'acronym' => 'PRJCT2',
             'description' => 'A sample description.',
+            'country_iso_code_3' => 'ETH',
         ]);
 
         $project2->setOwner(2);
