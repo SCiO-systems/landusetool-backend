@@ -27,8 +27,8 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
+            'acronym' => 'required|string|max:50',
             'description' => 'nullable|string',
-            'acronym' => 'required|string',
         ];
     }
 }

@@ -26,7 +26,7 @@ class CreateProjectRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'acronym' => 'required|string',
+            'acronym' => 'required|string|max:50',
             'description' => 'nullable|string',
             'country_iso_code_3' => 'string|required',
             'administrative_level' => 'numeric|required',
