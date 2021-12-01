@@ -32,10 +32,10 @@ class ScioController extends Controller
      * @param ListLDNTargetsRequest $request
      * @return void
      */
-    public function listLDNTargets(ListLDNTargetsRequest $request)
+    public function getCountryLevelLinks(ListLDNTargetsRequest $request)
     {
         $country = $request->country_iso_code_3;
-        $cacheKey = "ldn_targets_$country";
+        $cacheKey = "country_level_links_$country";
 
         if (Cache::has($cacheKey)) {
             return response()->json(Cache::get($cacheKey));

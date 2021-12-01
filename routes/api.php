@@ -72,7 +72,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         // LDN TARGETS
 
         // LDN targets.
-        Route::get('/ldn_targets', [ScioController::class, 'listLDNTargets'])->name('ldn_targets');
+        Route::get(
+            '/country_level_links',
+            [ScioController::class, 'getCountryLevelLinks']
+        )->name('country_level_links');
 
         // USER
 

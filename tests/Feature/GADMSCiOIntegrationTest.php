@@ -23,35 +23,31 @@ class GADMSCiOIntegrationTest extends TestCase
     }
 
     /** @test */
-    public function it_returns_the_ldn_targets_using_a_proper_format()
+    public function it_returns_the_country_level_links_using_a_proper_format()
     {
-        $response = $this->json('get', route('api.v1.ldn_targets', [
+        $response = $this->json('get', route('api.v1.country_level_links', [
             'country_iso_code_3' => 'GRC'
         ]));
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
+            'iso_316_1_alpha_3',
+            'iso_316_1_alpha_2',
             'country',
-            "term_suggester",
-            "climate_risk_profile",
-            "iso_316_1_alpha_3",
-            "iso_316_1_alpha_2",
-            "ldn_targets",
-            "disaster_reduction_recovery_profile",
-            "health_climate_change_country_profile",
-            "full_name",
-            "completion_suggester",
-            "disaster_and_risk_profile",
-            "disaster_risk_profile",
-            "ngram_tokenizer",
-            "phrase_suggester"
+            'full_name',
+            'unccd_annex',
+            'who_unfcc',
+            'usaid',
+            'undrr',
+            'gfdrr',
+            'gfdrrdrf',
         ]);
     }
 
     /** @test */
-    public function it_returns_not_found_for_the_ldn_targets_if_the_country_iso_is_wrong()
+    public function it_returns_not_found_for_the_country_level_links_if_the_country_iso_is_wrong()
     {
-        $response = $this->json('get', route('api.v1.ldn_targets', [
+        $response = $this->json('get', route('api.v1.country_level_links', [
             'country_iso_code_3' => 'GRE'
         ]));
 
@@ -61,18 +57,18 @@ class GADMSCiOIntegrationTest extends TestCase
     /** @test */
     public function it_returns_unprocessable_entity_if_the_country_is_not_specified()
     {
-        $response = $this->json('get', route('api.v1.ldn_targets'));
+        $response = $this->json('get', route('api.v1.country_level_links'));
 
         $response->assertStatus(422);
     }
 
     /** @test */
-    public function it_caches_the_response_for_ldn_targets_if_it_is_successful()
+    public function it_caches_the_response_for_country_level_links_if_it_is_successful()
     {
         $country = 'GRC';
-        $cacheKey = "ldn_targets_$country";
+        $cacheKey = "country_level_links_$country";
 
-        $response = $this->json('get', route('api.v1.ldn_targets', [
+        $response = $this->json('get', route('api.v1.country_level_links', [
             'country_iso_code_3' => $country
         ]));
 
