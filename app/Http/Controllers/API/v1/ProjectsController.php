@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\v1;
 
 use Http;
 use App\Models\Project;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Utilities\SCIO\TokenGenerator;
 use App\Utilities\SCIO\CoordsIDGenerator;
@@ -14,7 +13,6 @@ use App\Http\Requests\Projects\ListProjectsRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\DeleteProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
-use Exception;
 
 class ProjectsController extends Controller
 {
@@ -93,6 +91,9 @@ class ProjectsController extends Controller
             $project->tif_images = $response->json();
             $project->save();
         }
+
+        // Create the land use matrix for the project if it does not exist.
+        $project->createDefaultLandUseMatrix();
 
         return new ProjectResource($project);
     }

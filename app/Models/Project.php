@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
+use App\Models\ProjectLandUseMatrix;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -43,6 +44,14 @@ class Project extends Model
             } catch (Exception $ex) {
                 Log::error('The user is already invited. ' . $ex->getMessage());
             }
+        }
+    }
+
+    public function createDefaultLandUseMatrix()
+    {
+        if (!$this->landUseMatrix()->exists()) {
+            $matrix = ProjectLandUseMatrix::create(['project_id' => $this->id]);
+            $matrix->createDefaultMatrix();
         }
     }
 
@@ -86,8 +95,13 @@ class Project extends Model
         );
     }
 
-    public function focusAreas()
+    public function landUseMatrix()
     {
-        return $this->hasMany(FocusArea::class);
+        return $this->hasOne(ProjectLandUseMatrix::class);
+    }
+
+    public function scenarios()
+    {
+        return $this->hasMany(ProjectScenario::class);
     }
 }

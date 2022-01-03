@@ -9,8 +9,10 @@ use App\Http\Controllers\API\v1\IndicatorsController;
 use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
 use App\Http\Controllers\API\v1\UserPasswordController;
+use App\Http\Controllers\ProjectLandUseMatrixController;
 use App\Http\Controllers\API\v1\ProjectInvitesController;
 use App\Http\Controllers\API\v1\Integrations\ScioController;
+use App\Http\Controllers\ProjectScenarioController;
 
 // API v1
 Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function () {
@@ -42,8 +44,20 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
 
         // PROJECTS
 
+        // Project land use matrix.
+        Route::get('projects/{project}/land_use_matrix', [
+            ProjectLandUseMatrixController::class, 'index'
+        ]);
+
+        Route::put('projects/{project}/land_use_matrix', [
+            ProjectLandUseMatrixController::class, 'update'
+        ]);
+
         // Project management.
         Route::apiResource('projects', ProjectsController::class);
+
+        // Project scenarios management.
+        Route::apiResource('projects.scenarios', ProjectScenarioController::class);
 
         // Project invites.
         Route::apiResource('projects.invites', ProjectInvitesController::class)
