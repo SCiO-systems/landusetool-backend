@@ -12,6 +12,7 @@ use App\Http\Requests\LandCover\GetLandCoverPercentagesRequest;
 use App\Http\Requests\Polygons\GetPolygonsByCoordinatesRequest;
 use App\Http\Requests\Polygons\GetAdminLevelAreaPolygonsRequest;
 use App\Models\Project;
+use App\Utilities\SCIO\WocatTransformer;
 use Request;
 
 class ScioController extends Controller
@@ -167,65 +168,12 @@ class ScioController extends Controller
                 ],
             ]);
 
-        $transformed = [];
+        $transformed = null;
         if ($response->ok()) {
-            foreach ($response->json('response.data') as $item) {
-                $baseURI = 'https://qcat.wocat.net';
-
-                $images = data_get(
-                    $item,
-                    'section_specifications.tech__2.tech__2__3.qg_photos.image.value'
-                );
-
-                $imagesArray = [];
-                foreach ($images as $image) {
-                    $imagesArray[] = [
-                        'url' => $baseURI . data_get($image, 'value'),
-                        'caption' => '',
-                    ];
-                }
-
-                $transformed[] = [
-                    'id' => data_get($item, 'techId'),
-                    'url' => $baseURI . '/en/wocat/technologies/view/' . data_get($item, 'techId'),
-                    'map_url' => $baseURI . '/en/wocat/technologies/view/' . data_get($item, 'techId') . '/map',
-                    'name' => data_get(
-                        $item,
-                        'section_general_information.tech__1.tech__1__1.qg_name.name.value.0.value'
-                    ),
-                    'local_name' => data_get(
-                        $item,
-                        'section_general_information.tech__1.tech__1__1.qg_name.name_local.value.0.value'
-                    ),
-                    'definition' => data_get(
-                        $item,
-                        'section_specifications.tech__2.tech__2__1.tech_qg_1.tech_definition.value.0.value'
-                    ),
-                    'description' => data_get(
-                        $item,
-                        'section_specifications.tech__2.tech__2__2.tech_qg_2.tech_description.value.0.value'
-                    ),
-                    'location' => data_get(
-                        $item,
-                        'section_specifications.tech__2.tech__2__5.qg_location.country.value.0.value'
-                    ),
-                    'province' => data_get(
-                        $item,
-                        'section_specifications.tech__2.tech__2__5.qg_location.state_province.value.0.value'
-                    ),
-                    'location_comments' => data_get(
-                        $item,
-                        'section_specifications.tech__2.tech__2__5.tech_qg_225.location_comments.value.0.value'
-                    ),
-                    'implementation_period' => data_get(
-                        $item,
-                        'section_specifications.tech__2.tech__2__6.tech_qg_160.tech_implementation_decades.value.0.values.0.0'
-                    ),
-                    'images' => $imagesArray,
-                ];
-            }
+            $data = $response->json('response.data');
+            $transformed = (new WocatTransformer($data))->getTransformedOutput();
         }
 
-        return response()->json($transformed, $response->status());
+        return response()->json($transformed, $response->status(), [], JSON_UNESCAPED_SLASHES);
     }
 }
