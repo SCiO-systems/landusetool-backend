@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use Illuminate\Http\Request;
+use App\Models\ProjectScenario;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectScenarios\ListProjectScenariosRequest;
 use App\Http\Requests\ProjectScenarios\CreateProjectScenarioRequest;
 use App\Http\Requests\ProjectScenarios\DeleteProjectScenarioRequest;
-use App\Http\Requests\ProjectScenarios\ListProjectScenariosRequest;
 use App\Http\Requests\ProjectScenarios\UpdateProjectScenarioRequest;
-use App\Models\ProjectScenario;
 
 class ProjectScenariosController extends Controller
 {
