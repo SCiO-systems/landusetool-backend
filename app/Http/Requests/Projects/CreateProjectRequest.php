@@ -31,8 +31,6 @@ class CreateProjectRequest extends FormRequest
             'country_iso_code_3' => 'string|required',
             'administrative_level' => 'numeric|required',
             'polygon' => 'required',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
             'uses_default_lu_classification' => 'required|boolean',
             'lu_classes' => 'nullable|json',
         ];

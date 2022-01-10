@@ -23,6 +23,12 @@ class Project extends Model
         ]);
     }
 
+    public function setPolygon($polygon)
+    {
+        $this->polygon = json_encode($polygon);
+        $this->save();
+    }
+
     public function setUsers($users)
     {
         $this->users()->detach();

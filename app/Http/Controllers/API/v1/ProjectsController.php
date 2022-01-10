@@ -55,20 +55,20 @@ class ProjectsController extends Controller
         // Generate tif images using identifier and country iso 3.
         // Save the urls to the database.
 
+
         $project = Project::create(
             $request->only(
                 'title',
                 'acronym',
                 'description',
                 'country_iso_code_3',
-                'latitude',
-                'longitude',
                 'administrative_level',
                 'uses_default_lu_classification',
                 'lu_classes',
-            )
+            ),
         );
         $project->setOwner($request->user()->id);
+        $project->setPolygon($request->polygon);
 
         $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
         $identifier = (new CoordsIDGenerator($coordinates))->getId();
