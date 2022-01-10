@@ -61,7 +61,11 @@ class ProjectsController extends Controller
                 'acronym',
                 'description',
                 'country_iso_code_3',
-                'administrative_level'
+                'latitude',
+                'longitude',
+                'administrative_level',
+                'uses_default_lu_classification',
+                'lu_classes',
             )
         );
         $project->setOwner($request->user()->id);

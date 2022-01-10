@@ -42,6 +42,10 @@ class InitialSchema extends Migration
             $table->text('description')->nullable();
             $table->string('country_iso_code_3')->nullable();
             $table->string('administrative_level')->nullable();
+            $table->string('latitude');
+            $table->string('longitude');
+            $table->boolean('uses_default_lu_classification')->default(true);
+            $table->json('lu_classes')->nullable();
             $table->json('tif_images')->nullable();
             $table->timestamps();
         });
@@ -101,6 +105,7 @@ class InitialSchema extends Migration
             $table->string('name');
             $table->string('from_date');
             $table->string('to_date');
+            $table->json('land_use');
 
             $table->timestamps();
         });
