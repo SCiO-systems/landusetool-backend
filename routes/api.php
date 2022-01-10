@@ -53,6 +53,11 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ProjectLandUseMatrixController::class, 'update'
         ]);
 
+        // Land cover.
+        Route::get('projects/{project}/land_cover_percentages', [
+            ScioController::class, 'getLandCoverPercentages'
+        ])->name('projects.land_cover_percentages');
+
         // Project management.
         Route::apiResource('projects', ProjectsController::class);
 
@@ -90,6 +95,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             '/country_level_links',
             [ScioController::class, 'getCountryLevelLinks']
         )->name('country_level_links');
+
+        // WOCAT TECHNOLOGIES
+        Route::get('/wocat_technologies', [ScioController::class, 'getWocatTechnologies'])
+            ->name('wocat_technologies');
 
         // USER
 
