@@ -168,12 +168,19 @@ class ScioController extends Controller
                 ],
             ]);
 
-        $transformed = null;
+        $items = [];
+        $total = $response->json('response.total');
+
         if ($response->ok()) {
             $data = $response->json('response.data');
-            $transformed = (new WocatTransformer($data))->getTransformedOutput();
+            $items = (new WocatTransformer($data))->getTransformedOutput();
         }
 
-        return response()->json($transformed, $response->status(), [], JSON_UNESCAPED_SLASHES);
+        return response()->json(
+            ['data' => ['items' => $items, 'total' => $total]],
+            $response->status(),
+            [],
+            JSON_UNESCAPED_SLASHES
+        );
     }
 }
