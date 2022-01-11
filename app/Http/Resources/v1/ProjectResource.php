@@ -23,6 +23,8 @@ class ProjectResource extends JsonResource
             'administrative_level' => $this->administrative_level,
             'users' => ProjectUserResource::collection($this->whenLoaded('users')),
             'role' => $this->pivot->role ?? null,
+            'uses_default_lu_classification' => $this->uses_default_lu_classification,
+            'lu_classes' => $this->lu_classes,
             'tif_images' => $this->tif_images,
         ];
     }
