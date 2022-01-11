@@ -24,7 +24,7 @@ class ProjectResource extends JsonResource
             'users' => ProjectUserResource::collection($this->whenLoaded('users')),
             'role' => $this->pivot->role ?? null,
             'uses_default_lu_classification' => $this->uses_default_lu_classification,
-            'lu_classes' => $this->lu_classes,
+            'lu_classes' => json_decode($this->lu_classes),
             'tif_images' => $this->tif_images,
         ];
     }
