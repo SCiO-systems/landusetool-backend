@@ -110,4 +110,9 @@ class Project extends Model
     {
         return $this->hasMany(ProjectScenario::class);
     }
+
+    public function technologies()
+    {
+        return $this->hasMany(ProjectWocatTechnology::class);
+    }
 }

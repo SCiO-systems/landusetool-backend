@@ -5,6 +5,7 @@ use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\UserController;
 use App\Http\Controllers\API\v1\InvitesController;
 use App\Http\Controllers\API\v1\ProjectsController;
+use App\Http\Controllers\ProjectScenarioController;
 use App\Http\Controllers\API\v1\IndicatorsController;
 use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
@@ -12,7 +13,6 @@ use App\Http\Controllers\API\v1\UserPasswordController;
 use App\Http\Controllers\ProjectLandUseMatrixController;
 use App\Http\Controllers\API\v1\ProjectInvitesController;
 use App\Http\Controllers\API\v1\Integrations\ScioController;
-use App\Http\Controllers\ProjectScenarioController;
 
 // API v1
 Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function () {
@@ -57,6 +57,16 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         Route::get('projects/{project}/land_cover_percentages', [
             ScioController::class, 'getLandCoverPercentages'
         ])->name('projects.land_cover_percentages');
+
+        // Project selected wocat technologies.
+        Route::get('projects/{project}/wocat_technologies', [
+            ProjectsController::class, 'getWocatTechnologies'
+        ])->name('projects.wocat_technologies');
+
+        // Choose a WOCAT technology.
+        Route::post('projects/{project}/choose_wocat_technology', [
+            ProjectsController::class, 'chooseWocatTechnology'
+        ])->name('projects.choose_wocat_technology');
 
         // Project management.
         Route::apiResource('projects', ProjectsController::class);

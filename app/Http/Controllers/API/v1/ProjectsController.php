@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use Http;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
 use App\Utilities\SCIO\TokenGenerator;
 use App\Utilities\SCIO\CoordsIDGenerator;
 use App\Http\Resources\v1\ProjectResource;
@@ -12,7 +13,9 @@ use App\Http\Requests\Projects\ShowProjectRequest;
 use App\Http\Requests\Projects\ListProjectsRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\DeleteProjectRequest;
+use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
+use App\Http\Resources\v1\ProjectWocatTechnologyResource;
 
 class ProjectsController extends Controller
 {
@@ -145,5 +148,36 @@ class ProjectsController extends Controller
         }
 
         return response()->json(null, 500);
+    }
+
+    /**
+     * Get the IDs of the WOCAT technologies of a project.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getWocatTechnologies(ListProjectTechnologiesRequest $request, Project $project)
+    {
+        $technologies = $project->technologies()->with('user')->get();
+
+        return ProjectWocatTechnologyResource::collection($technologies);
+    }
+
+    /**
+     * Choose the WOCAT technology of a project.
+     */
+    public function chooseWocatTechnology(ChooseProjectTechnologyRequest $request, Project $project)
+    {
+        $foundProject = $request->user()->projects()->findOrFail($project->id);
+
+        $foundProject->technologies()->save([
+            'user_id' => $request->user()->id,
+            'project_id' => $project->id,
+            'technology_id' => $request->technology_id,
+        ]);
+
+        $technologies = $foundProject->technologies();
+
+        return ProjectWocatTechnologyResource::collection($technologies);
     }
 }
