@@ -98,7 +98,7 @@ class Project extends Model
             'project_indicator',
             'project_id',
             'indicator_id'
-        );
+        )->withTimestamps();
     }
 
     public function landUseMatrix()

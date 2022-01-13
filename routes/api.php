@@ -5,14 +5,15 @@ use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\UserController;
 use App\Http\Controllers\API\v1\InvitesController;
 use App\Http\Controllers\API\v1\ProjectsController;
-use App\Http\Controllers\ProjectScenarioController;
 use App\Http\Controllers\API\v1\IndicatorsController;
+use App\Http\Controllers\ProjectScenarioController;
 use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
 use App\Http\Controllers\API\v1\UserPasswordController;
 use App\Http\Controllers\ProjectLandUseMatrixController;
 use App\Http\Controllers\API\v1\ProjectInvitesController;
 use App\Http\Controllers\API\v1\Integrations\ScioController;
+use App\Http\Controllers\API\v1\ProjectIndicatorsController;
 
 // API v1
 Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function () {
@@ -70,6 +71,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
 
         // Project management.
         Route::apiResource('projects', ProjectsController::class);
+
+        // Project indicators.
+        Route::get('projects/{project}/indicators', [ProjectIndicatorsController::class, 'index']);
+        Route::put('projects/{project}/indicators', [ProjectIndicatorsController::class, 'update']);
 
         // Project scenarios management.
         Route::apiResource('projects.scenarios', ProjectScenarioController::class);
