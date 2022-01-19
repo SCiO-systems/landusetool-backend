@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Projects;
+namespace App\Http\Requests\Files;
 
+use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteProjectRequest extends FormRequest
+class ListFilesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,9 +14,7 @@ class DeleteProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        $isProjectOwner = $this->project->owner->id === $this->user()->id;
-
-        return $isProjectOwner;
+        return Auth::check();
     }
 
     /**

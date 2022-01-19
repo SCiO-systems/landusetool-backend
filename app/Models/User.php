@@ -42,4 +42,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(ProjectInvite::class)->where('status', ProjectInvite::STATUS_PENDING);
     }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
 }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\ProjectLandUseMatrix;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Storage;
 
 class Project extends Model
 {
@@ -114,5 +115,27 @@ class Project extends Model
     public function technologies()
     {
         return $this->hasMany(ProjectWocatTechnology::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
+
+    public function deleteAllFiles()
+    {
+        $count = $this->files()->count();
+        $files = $this->files()->get();
+
+        $deleted = 0;
+        foreach ($files as $file) {
+            $isFileDeleted = Storage::delete($file->path);
+            if ($isFileDeleted) {
+                $file->delete();
+                $deleted++;
+            }
+        }
+
+        return $deleted === $count;
     }
 }

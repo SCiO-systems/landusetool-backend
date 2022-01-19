@@ -3,19 +3,23 @@
 namespace App\Http\Controllers\API\v1;
 
 use Http;
+use App\Models\File;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
 use App\Utilities\SCIO\TokenGenerator;
+use App\Http\Resources\v1\FileResource;
 use App\Utilities\SCIO\CoordsIDGenerator;
 use App\Http\Resources\v1\ProjectResource;
 use App\Http\Requests\Projects\ShowProjectRequest;
 use App\Http\Requests\Projects\ListProjectsRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\DeleteProjectRequest;
-use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
+use App\Http\Requests\Projects\GetProjectFilesRequest;
 use App\Http\Resources\v1\ProjectWocatTechnologyResource;
+use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
+use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
+use App\Http\Requests\Projects\AssociateProjectWithFilesRequest;
 
 class ProjectsController extends Controller
 {
@@ -179,5 +183,34 @@ class ProjectsController extends Controller
         $technologies = $foundProject->technologies();
 
         return ProjectWocatTechnologyResource::collection($technologies);
+    }
+
+    /**
+     * Fetch the files for a project.
+     */
+    public function getFiles(GetProjectFilesRequest $request, Project $project)
+    {
+        $files = $project->files()->get();
+
+        return FileResource::collection($files);
+    }
+
+    /**
+     * Associate the files with a project.
+     */
+    public function associateFiles(AssociateProjectWithFilesRequest $request, Project $project)
+    {
+        // The files to associate are the ones that the user has uploaded
+        // and the ones that can be associated (that are not associated with another project).
+        $files = array_intersect(
+            $request->only('files'),
+            $request->user()->files()->pluck('id')->toArray()
+        );
+
+        $found = File::whereNull('project_id')->whereIn('id', $files);
+
+        $found->update(['project_id' => $project->id]);
+
+        return new FileResource($found->get());
     }
 }
