@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class File extends Model
+class ProjectFile extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
+    protected $table = 'project_file';
 
     public function project()
     {

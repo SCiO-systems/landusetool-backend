@@ -5,25 +5,31 @@ namespace App\Http\Controllers\API\v1;
 use Str;
 use Storage;
 use App\Models\File;
+use App\Models\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\FileResource;
-use App\Http\Requests\Files\ListFilesRequest;
 use App\Http\Requests\Files\DeleteFileRequest;
 use App\Http\Requests\Files\UploadFileRequest;
 use App\Http\Requests\Files\GetSingleFileRequest;
+use App\Http\Requests\ProjectFiles\CreateProjectFileRequest;
+use App\Http\Requests\ProjectFiles\DeleteProjectFileRequest;
+use App\Http\Requests\ProjectFiles\ListProjectFilesRequest;
+use App\Http\Requests\ProjectFiles\ShowProjectFileRequest;
+use App\Http\Resources\v1\ProjectFileResource;
+use App\Models\ProjectFile;
 
-class FilesController extends Controller
+class ProjectFilesController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ListFilesRequest $request)
+    public function index(ListProjectFilesRequest $request, Project $project)
     {
-        $files = $request->user()->files()->get();
+        $files = $project->files()->get();
 
-        return FileResource::collection($files);
+        return ProjectFileResource::collection($files);
     }
 
     /**
@@ -32,21 +38,23 @@ class FilesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UploadFileRequest $request)
+    public function store(CreateProjectFileRequest $request, Project $project)
     {
         $file = $request->file('file');
         $name = Str::uuid();
 
         $created = null;
         if (Storage::put($name, $file)) {
-            $created = File::create([
+
+            $created = ProjectFile::create([
+                'project_id' => $project->id,
                 'user_id' => $request->user()->id,
                 'path' => $name,
                 'filename' => $file->getClientOriginalName(),
             ]);
         }
 
-        return new FileResource($created);
+        return new ProjectFileResource($created);
     }
 
     /**
@@ -55,9 +63,11 @@ class FilesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(GetSingleFileRequest $request, File $file)
+    public function show(ShowProjectFileRequest $request, Project $project, ProjectFile $file)
     {
-        return new FileResource($file);
+        $file = $project->files()->find($file->id);
+
+        return new ProjectFileResource($file);
     }
 
     /**
@@ -66,13 +76,13 @@ class FilesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DeleteFileRequest $request, File $file)
+    public function destroy(DeleteProjectFileRequest $request, Project $project, ProjectFile $file)
     {
         $isFileDeleted = Storage::delete($file->path);
 
         if ($isFileDeleted) {
-            $dbEntryDeleted = $file->delete();
-            if ($dbEntryDeleted) {
+            $isDbEntryDeleted = $file->delete();
+            if ($isDbEntryDeleted) {
                 return response()->json([], 204);
             }
         }

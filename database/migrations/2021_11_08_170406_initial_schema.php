@@ -48,6 +48,7 @@ class InitialSchema extends Migration
             $table->json('lu_classes')->nullable();
             $table->json('tif_images')->nullable();
             $table->foreignId('custom_land_degradation_map_file_id')->nullable();
+            $table->foreignId('roi_file_id')->nullable();
             $table->string('status')->default(Project::STATUS_DRAFT);
             $table->timestamps();
         });
@@ -125,7 +126,7 @@ class InitialSchema extends Migration
             );
         });
 
-        Schema::create('project_files', function (Blueprint $table) {
+        Schema::create('project_file', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->nullable();
             $table->foreignId('user_id');

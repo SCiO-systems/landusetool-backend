@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Files;
+namespace App\Http\Requests\ProjectFiles;
 
-use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListFilesRequest extends FormRequest
+class ListProjectFilesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +13,9 @@ class ListFilesRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        $isProjectUser = $this->project->users()->where('user_id', $this->user()->id)->exists();
+
+        return $isProjectUser;
     }
 
     /**

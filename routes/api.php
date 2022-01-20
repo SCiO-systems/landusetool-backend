@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\v1\FilesController;
 use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\UserController;
 use App\Http\Controllers\API\v1\InvitesController;
@@ -10,6 +9,7 @@ use App\Http\Controllers\ProjectScenarioController;
 use App\Http\Controllers\API\v1\IndicatorsController;
 use App\Http\Controllers\API\v1\UserAvatarController;
 use App\Http\Controllers\API\v1\OAuth\ORCIDController;
+use App\Http\Controllers\API\v1\ProjectFilesController;
 use App\Http\Controllers\API\v1\UserPasswordController;
 use App\Http\Controllers\ProjectLandUseMatrixController;
 use App\Http\Controllers\API\v1\ProjectInvitesController;
@@ -55,12 +55,6 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ProjectLandUseMatrixController::class, 'update'
         ]);
 
-        // Project files.
-        Route::get('projects/{project}/files', [ProjectsController::class, 'getFiles']);
-        Route::post('projects/{project}/associate_files', [
-            ProjectsController::class, 'associateFiles'
-        ]);
-
         // Land cover.
         Route::get('projects/{project}/land_cover_percentages', [
             ScioController::class, 'getLandCoverPercentages'
@@ -93,6 +87,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         // Invites.
         Route::apiResource('invites', InvitesController::class)
             ->only(['index', 'update']);
+
+        // PROJECT FILES
+
+        Route::apiResource('projects.files', ProjectFilesController::class);
 
         // INDICATORS
 
@@ -133,12 +131,5 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
 
         // Update user password.
         Route::put('/users/{user}/password', [UserPasswordController::class, 'update']);
-
-        // FILES.
-
-        // TODO: Create cleanup task.
-        // Files management.
-        Route::apiResource('files', FilesController::class)
-            ->only(['index', 'store', 'show', 'destroy']);
     });
 });

@@ -26,7 +26,8 @@ class ProjectResource extends JsonResource
             'uses_default_lu_classification' => $this->uses_default_lu_classification,
             'lu_classes' => json_decode($this->lu_classes),
             'tif_images' => $this->tif_images,
-            'custom_land_degradation_map_file_id' => $this->custom_land_degradation_map_file_id
+            'custom_land_degradation_map_file_id' => $this->custom_land_degradation_map_file_id,
+            'roi_file_id' => $this->roi_file_id,
         ];
     }
 }

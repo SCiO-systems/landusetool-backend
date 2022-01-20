@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
+use Storage;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use App\Models\ProjectLandUseMatrix;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Storage;
 
 class Project extends Model
 {
     use HasFactory;
+
+    // The available project statuses.
+    public const STATUS_DRAFT      = 'draft';
+    public const STATUS_PUBLISHED  = 'published';
 
     protected $guarded = [];
 
@@ -137,22 +141,5 @@ class Project extends Model
         }
 
         return $deleted === $count;
-    }
-
-    public function associateFiles($files = [])
-    {
-        if (empty($files)) {
-            return false;
-        }
-
-        foreach ($files as $id) {
-            $file = File::whereNull('project_id')->find($id);
-            if ($file) {
-                $file->project_id = $this->id;
-                $file->save();
-            }
-        }
-
-        return true;
     }
 }

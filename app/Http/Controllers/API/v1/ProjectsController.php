@@ -74,12 +74,6 @@ class ProjectsController extends Controller
         );
         $project->setOwner($request->user()->id);
         $project->setPolygon($request->polygon);
-        $project->custom_land_degradation_map_file_id = $request->custom_land_degradation_map_file_id;
-
-        // Associate the custom land degradation map file with the project.
-        if (!empty($request->custom_land_degradation_map_file_id)) {
-            $project->associateFiles([$request->custom_land_degradation_map_file_id]);
-        }
 
         $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
         $identifier = (new CoordsIDGenerator($coordinates))->getId();
@@ -187,34 +181,5 @@ class ProjectsController extends Controller
         $technologies = $foundProject->technologies();
 
         return ProjectWocatTechnologyResource::collection($technologies);
-    }
-
-    /**
-     * Fetch the files for a project.
-     */
-    public function getFiles(GetProjectFilesRequest $request, Project $project)
-    {
-        $files = $project->files()->get();
-
-        return FileResource::collection($files);
-    }
-
-    /**
-     * Associate the files with a project.
-     */
-    public function associateFiles(AssociateProjectWithFilesRequest $request, Project $project)
-    {
-        // The files to associate are the ones that the user has uploaded
-        // and the ones that can be associated (that are not associated with another project).
-        $files = array_intersect(
-            $request->only('files'),
-            $request->user()->files()->pluck('id')->toArray()
-        );
-
-        $found = File::whereNull('project_id')->whereIn('id', $files);
-
-        $found->update(['project_id' => $project->id]);
-
-        return new FileResource($found->get());
     }
 }

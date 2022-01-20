@@ -5,7 +5,7 @@ namespace App\Http\Resources\v1;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Storage;
 
-class FileResource extends JsonResource
+class ProjectFileResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +17,6 @@ class FileResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'project' => new ProjectResource($this->project),
-            'user' => new UserResource($this->user),
             'filename' => $this->filename,
             'path' => $this->path,
             'url' => Storage::url($this->path),

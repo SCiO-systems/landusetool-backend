@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Files;
+namespace App\Http\Requests\ProjectFiles;
 
-use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UploadFileRequest extends FormRequest
+class ShowProjectFileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +13,9 @@ class UploadFileRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        $isProjectUser = $this->project->users()->where('user_id', $this->user()->id)->exists();
+
+        return $isProjectUser;
     }
 
     /**
@@ -24,8 +25,6 @@ class UploadFileRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'file' => 'required|file|max:50000'
-        ];
+        return [];
     }
 }
