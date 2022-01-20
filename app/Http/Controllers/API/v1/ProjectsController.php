@@ -23,7 +23,6 @@ use App\Http\Requests\Projects\AssociateProjectWithFilesRequest;
 
 class ProjectsController extends Controller
 {
-
     protected $cacheTtl;
     protected $baseURI;
     protected $requestTimeout;
@@ -62,7 +61,6 @@ class ProjectsController extends Controller
         // Generate tif images using identifier and country iso 3.
         // Save the urls to the database.
 
-
         $project = Project::create(
             $request->only(
                 'title',
@@ -76,6 +74,12 @@ class ProjectsController extends Controller
         );
         $project->setOwner($request->user()->id);
         $project->setPolygon($request->polygon);
+        $project->custom_land_degradation_map_file_id = $request->custom_land_degradation_map_file_id;
+
+        // Associate the custom land degradation map file with the project.
+        if (!empty($request->custom_land_degradation_map_file_id)) {
+            $project->associateFiles([$request->custom_land_degradation_map_file_id]);
+        }
 
         $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
         $identifier = (new CoordsIDGenerator($coordinates))->getId();

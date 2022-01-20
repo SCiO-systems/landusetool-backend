@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\v1;
 
-use App\Http\Requests\Files\DeleteFileRequest;
-use App\Http\Requests\Files\GetSingleFileRequest;
 use Str;
 use Storage;
 use App\Models\File;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\FileResource;
 use App\Http\Requests\Files\ListFilesRequest;
+use App\Http\Requests\Files\DeleteFileRequest;
 use App\Http\Requests\Files\UploadFileRequest;
-use App\Http\Requests\Projects\DeleteProjectRequest;
+use App\Http\Requests\Files\GetSingleFileRequest;
 
 class FilesController extends Controller
 {

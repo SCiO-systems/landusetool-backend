@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FilesController;
+use App\Http\Controllers\API\v1\FilesController;
 use App\Http\Controllers\API\v1\AuthController;
 use App\Http\Controllers\API\v1\UserController;
 use App\Http\Controllers\API\v1\InvitesController;

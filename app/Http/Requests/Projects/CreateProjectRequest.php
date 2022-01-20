@@ -33,6 +33,7 @@ class CreateProjectRequest extends FormRequest
             'polygon' => 'required',
             'uses_default_lu_classification' => 'required|boolean',
             'lu_classes' => 'nullable|json',
+            'custom_land_degradation_map_file_id' => 'nullable|exists:files,id',
         ];
     }
 }

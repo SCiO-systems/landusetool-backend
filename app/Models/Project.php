@@ -138,4 +138,21 @@ class Project extends Model
 
         return $deleted === $count;
     }
+
+    public function associateFiles($files = [])
+    {
+        if (empty($files)) {
+            return false;
+        }
+
+        foreach ($files as $id) {
+            $file = File::whereNull('project_id')->find($id);
+            if ($file) {
+                $file->project_id = $this->id;
+                $file->save();
+            }
+        }
+
+        return true;
+    }
 }
