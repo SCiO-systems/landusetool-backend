@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Project;
 use App\Models\ProjectInvite;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,7 +20,7 @@ class InitialSchema extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('transferable')->default(false);
-            $table->unsignedBigInteger('parent_indicator_id')->nullable()->default(null);
+            $table->foreignId('parent_indicator_id')->nullable()->default(null);
             $table->timestamps();
         });
 
@@ -46,13 +47,15 @@ class InitialSchema extends Migration
             $table->boolean('uses_default_lu_classification')->default(true);
             $table->json('lu_classes')->nullable();
             $table->json('tif_images')->nullable();
+            $table->foreignId('custom_land_degradation_map_file_id')->nullable();
+            $table->string('status')->default(Project::STATUS_DRAFT);
             $table->timestamps();
         });
 
         Schema::create('project_user', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_id');
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('project_id');
+            $table->foreignId('user_id');
             $table->string('role')->default(User::ROLE_USER);
             $table->timestamps();
 
@@ -61,8 +64,8 @@ class InitialSchema extends Migration
 
         Schema::create('project_invite', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_id');
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('project_id');
+            $table->foreignId('user_id');
             $table->string('status')->default(ProjectInvite::STATUS_PENDING);
             $table->timestamps();
 
@@ -71,8 +74,8 @@ class InitialSchema extends Migration
 
         Schema::create('project_indicator', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_id');
-            $table->unsignedBigInteger('indicator_id');
+            $table->foreignId('project_id');
+            $table->foreignId('indicator_id');
             $table->timestamps();
 
             $table->unique(['project_id', 'indicator_id']);
@@ -80,13 +83,13 @@ class InitialSchema extends Migration
 
         Schema::create('project_land_use_matrix', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_id');
+            $table->foreignId('project_id');
             $table->timestamps();
         });
 
         Schema::create('project_land_use_matrix_values', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_land_use_matrix_id');
+            $table->foreignId('project_land_use_matrix_id');
             $table->string('row');
             $table->string('column');
             $table->string('value');
@@ -100,12 +103,34 @@ class InitialSchema extends Migration
 
         Schema::create('project_scenario', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('project_id');
+            $table->foreignId('project_id');
             $table->string('name');
             $table->string('from_date');
             $table->string('to_date');
             $table->json('land_use');
 
+            $table->timestamps();
+        });
+
+        Schema::create('project_wocat_slm_technology', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('project_id');
+            $table->foreignId('user_id');
+            $table->string('technology_id');
+            $table->timestamps();
+
+            $table->unique(
+                ['project_id', 'user_id', 'technology_id'],
+                'project_wocat_slm_technology_unique'
+            );
+        });
+
+        Schema::create('project_files', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('project_id')->nullable();
+            $table->foreignId('user_id');
+            $table->string('filename');
+            $table->string('path');
             $table->timestamps();
         });
     }
@@ -117,9 +142,16 @@ class InitialSchema extends Migration
      */
     public function down()
     {
+        Schema::drop('project_files');
+        Schema::drop('project_wocat_slm_technology');
+        Schema::drop('project_scenario');
+        Schema::drop('project_land_use_matrix_values');
+        Schema::drop('project_land_use_matrix');
+        Schema::drop('project_indicator');
         Schema::drop('project_invite');
         Schema::drop('project_user');
         Schema::drop('projects');
         Schema::drop('users');
+        Schema::drop('indicators');
     }
 }
