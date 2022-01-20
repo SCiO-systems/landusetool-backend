@@ -190,11 +190,19 @@ class ProjectsController extends Controller
     {
         $foundProject = $request->user()->projects()->findOrFail($project->id);
 
-        if ($foundProject->delete()) {
-            return response()->json(null, 204);
+        if (!$foundProject->deleteAllFiles()) {
+            return response()->json(['errors' => [
+                'error' => 'Failed to delete project files.'
+            ]], 422);
         }
 
-        return response()->json(null, 500);
+        if (!$foundProject->delete()) {
+            return response()->json(['errors' => [
+                'error' => 'Failed to delete project.'
+            ]], 422);
+        }
+
+        return response()->json(null, 204);
     }
 
     /**
