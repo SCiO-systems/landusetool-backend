@@ -15,11 +15,10 @@ use App\Http\Requests\Projects\ListProjectsRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\DeleteProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
-use App\Http\Requests\Projects\GetProjectFilesRequest;
+use App\Http\Requests\Projects\PublishProjectRequest;
 use App\Http\Resources\v1\ProjectWocatTechnologyResource;
 use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
 use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
-use App\Http\Requests\Projects\AssociateProjectWithFilesRequest;
 
 class ProjectsController extends Controller
 {
@@ -66,43 +65,14 @@ class ProjectsController extends Controller
                 'title',
                 'acronym',
                 'description',
-                'country_iso_code_3',
-                'administrative_level',
-                'uses_default_lu_classification',
-                'lu_classes',
             ),
         );
+
         $project->setOwner($request->user()->id);
-        $project->setPolygon($request->polygon);
 
-        $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
-        $identifier = (new CoordsIDGenerator($coordinates))->getId();
-
-        $body = [
-            'identifier' => $identifier,
-            'country_ISO' => $request->country_iso_code_3,
-            'area' => $request->polygon,
-        ];
-
-        $response = Http::timeout($this->requestTimeout)
-            ->withToken($this->token)
-            ->acceptJson()
-            ->asJson()
-            ->post("$this->baseURI/tifCropperByROI", $body);
-
-        if ($response->failed()) {
-            return response()->json([
-                'error' => 'Failed to contact remote service for generating TIF images.'
-            ], $response->status());
-        }
-
-        if ($response->ok()) {
-            $project->tif_images = $response->json();
-            $project->save();
-        }
-
+        // TODO: Maybe enable this.
         // Create the land use matrix for the project if it does not exist.
-        $project->createDefaultLandUseMatrix();
+        // $project->createDefaultLandUseMatrix();
 
         return new ProjectResource($project);
     }
@@ -129,8 +99,83 @@ class ProjectsController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        // Check if the project exists.
         $foundProject = $request->user()->projects()->findOrFail($project->id);
-        $foundProject->update($request->only('title', 'acronym', 'description'));
+
+        // Check if the project is in a DRAFT state.
+        if ($foundProject->status !== Project::STATUS_DRAFT) {
+            return response()->json(['errors' => [
+                'error' => 'The project is not in a DRAFT state and cannot be edited.'
+            ]], 422);
+        }
+
+        $foundProject->update($request->only(
+            'title',
+            'acronym',
+            'description',
+            'country_iso_code_3',
+            'administrative_level',
+            'uses_default_lu_classification',
+            'lu_classes',
+            'step',
+            'custom_land_degradation_map_file_id',
+            'roi_file_id'
+        ));
+
+        // If the user has sent a polygon.
+        if (!empty($project->polygon)) {
+            $project->setPolygon($request->polygon);
+
+            $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
+            $identifier = (new CoordsIDGenerator($coordinates))->getId();
+
+            $body = [
+                'identifier' => $identifier,
+                'country_ISO' => $request->country_iso_code_3,
+                'area' => $request->polygon,
+            ];
+
+            $response = Http::timeout($this->requestTimeout)
+                ->withToken($this->token)
+                ->acceptJson()
+                ->asJson()
+                ->post("$this->baseURI/tifCropperByROI", $body);
+
+            if ($response->failed()) {
+                return response()->json([
+                    'error' => 'Failed to contact remote service for generating TIF images.'
+                ], $response->status());
+            }
+
+            if ($response->ok()) {
+                $project->tif_images = $response->json();
+                $project->save();
+            }
+        }
+
+        return new ProjectResource($foundProject);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function publish(PublishProjectRequest $request, Project $project)
+    {
+        // Check if the project exists.
+        $foundProject = $request->user()->projects()->findOrFail($project->id);
+
+        // Check if the project is in a DRAFT state.
+        if ($foundProject->status !== Project::STATUS_DRAFT) {
+            return response()->json(['errors' => [
+                'error' => 'The project is not in a DRAFT state and cannot be edited.'
+            ]], 422);
+        }
+
+        $project->update(['status' => Project::STATUS_PUBLISHED]);
 
         return new ProjectResource($foundProject);
     }

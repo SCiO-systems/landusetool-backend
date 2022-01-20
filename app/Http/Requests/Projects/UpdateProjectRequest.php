@@ -26,9 +26,17 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
-            'acronym' => 'required|string|max:50',
+            'title' => 'string',
+            'acronym' => 'string|max:50',
             'description' => 'nullable|string',
+            'country_iso_code_3' => 'nullable|string',
+            'administrative_level' => 'nullable|numeric',
+            'polygon' => 'nullable|string',
+            'uses_default_lu_classification' => 'boolean',
+            'lu_classes' => 'nullable|json',
+            'step' => 'nullable|string',
+            'custom_land_degradation_map_file_id' => 'nullable|exists:files,id',
+            'roi_file_id' => 'nullable|exists:files,id',
         ];
     }
 }

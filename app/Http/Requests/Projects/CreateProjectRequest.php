@@ -28,12 +28,6 @@ class CreateProjectRequest extends FormRequest
             'title' => 'required|string',
             'acronym' => 'required|string|max:50',
             'description' => 'nullable|string',
-            'country_iso_code_3' => 'string|required',
-            'administrative_level' => 'numeric|required',
-            'polygon' => 'required',
-            'uses_default_lu_classification' => 'required|boolean',
-            'lu_classes' => 'nullable|json',
-            'custom_land_degradation_map_file_id' => 'nullable|exists:files,id',
         ];
     }
 }

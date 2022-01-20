@@ -55,6 +55,9 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ProjectLandUseMatrixController::class, 'update'
         ]);
 
+        // Publish a project.
+        Route::post('projects/{project}/publish', [ProjectsController::class, 'publish']);
+
         // Land cover.
         Route::get('projects/{project}/land_cover_percentages', [
             ScioController::class, 'getLandCoverPercentages'

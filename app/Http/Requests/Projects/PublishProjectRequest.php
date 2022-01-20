@@ -4,7 +4,7 @@ namespace App\Http\Requests\Projects;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AssociateProjectWithFilesRequest extends FormRequest
+class PublishProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,6 @@ class AssociateProjectWithFilesRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'files' => 'array|numeric',
-            'files.*' => 'exists:files,id',
-        ];
+        return [];
     }
 }
