@@ -33,7 +33,7 @@ class UpdateProjectRequest extends FormRequest
             'administrative_level' => 'nullable|numeric',
             'polygon' => 'nullable',
             'uses_default_lu_classification' => 'boolean',
-            'lu_classes' => 'nullable|json',
+            'lu_classes' => 'nullable',
             'step' => 'nullable|string',
             'custom_land_degradation_map_file_id' => 'nullable|exists:files,id',
             'roi_file_id' => 'nullable|exists:files,id',

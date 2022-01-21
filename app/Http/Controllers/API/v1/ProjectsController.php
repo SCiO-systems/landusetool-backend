@@ -116,11 +116,15 @@ class ProjectsController extends Controller
             'country_iso_code_3',
             'administrative_level',
             'uses_default_lu_classification',
-            'lu_classes',
             'step',
             'custom_land_degradation_map_file_id',
             'roi_file_id'
         ));
+
+        if (!empty($request->lu_classes)) {
+            $foundProject->lu_classes = json_encode($request->lu_classes);
+            $foundProject->save();
+        }
 
         // If the user has sent a polygon.
         if (!empty($project->polygon)) {
