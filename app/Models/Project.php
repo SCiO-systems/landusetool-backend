@@ -142,4 +142,9 @@ class Project extends Model
 
         return $deleted === $count;
     }
+
+    public function deleteUsers()
+    {
+        return $this->users()->detach();
+    }
 }
