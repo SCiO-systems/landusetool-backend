@@ -28,6 +28,8 @@ class ProjectResource extends JsonResource
             'tif_images' => $this->tif_images,
             'custom_land_degradation_map_file_id' => $this->custom_land_degradation_map_file_id,
             'roi_file_id' => $this->roi_file_id,
+            'step' => $this->step,
+            'status' => $this->status,
         ];
     }
 }
