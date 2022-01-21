@@ -31,7 +31,7 @@ class UpdateProjectRequest extends FormRequest
             'description' => 'nullable|string',
             'country_iso_code_3' => 'nullable|string',
             'administrative_level' => 'nullable|numeric',
-            'polygon' => 'nullable|string',
+            'polygon' => 'nullable',
             'uses_default_lu_classification' => 'boolean',
             'lu_classes' => 'nullable|json',
             'step' => 'nullable|string',
