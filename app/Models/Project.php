@@ -123,10 +123,25 @@ class Project extends Model
 
     public function files()
     {
-        return $this->hasMany(File::class);
+        return $this->hasMany(ProjectFile::class);
     }
 
-    public function deleteAllFiles()
+    public function delete()
+    {
+        $this->deleteFiles();
+
+        $this->users()->detach();
+        $this->indicators()->detach();
+
+        $this->scenarios()->delete();
+        $this->technologies()->delete();
+        $this->invites()->delete();
+        $this->landUseMatrix()->delete();
+
+        return parent::delete();
+    }
+
+    private function deleteFiles()
     {
         $count = $this->files()->count();
         $files = $this->files()->get();
@@ -141,10 +156,5 @@ class Project extends Model
         }
 
         return $deleted === $count;
-    }
-
-    public function deleteUsers()
-    {
-        return $this->users()->detach();
     }
 }
