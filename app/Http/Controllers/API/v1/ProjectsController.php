@@ -175,7 +175,7 @@ class ProjectsController extends Controller
             ]], 422);
         }
 
-        $project->update(['status' => Project::STATUS_PUBLISHED]);
+        $foundProject->update(['status' => Project::STATUS_PUBLISHED]);
 
         return new ProjectResource($foundProject);
     }
