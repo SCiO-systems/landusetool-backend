@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\ProjectFiles;
+namespace App\Http\Requests\LandCover;
 
-use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProjectFileRequest extends FormRequest
+class GetLandCoverPercentagesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +13,10 @@ class CreateProjectFileRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        $isProjectOwner = $this->project->owner->id === $this->user()->id;
+        $isProjectUser = $this->project->users()->where('user_id', $this->user()->id)->exists();
+
+        return $isProjectOwner || $isProjectUser;
     }
 
     /**
@@ -25,7 +27,7 @@ class CreateProjectFileRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required|file|max:50000'
+            'most_recent_year' => 'boolean',
         ];
     }
 }

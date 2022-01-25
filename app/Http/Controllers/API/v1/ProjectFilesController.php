@@ -42,6 +42,19 @@ class ProjectFilesController extends Controller
     {
         $file = $request->file('file');
         $name = Str::uuid();
+        $filename = $file->getClientOriginalName();
+
+        $validExtensions = ['geotiff', 'geotif', 'tiff', 'tif', 'geojson', 'shp'];
+        $extensions = explode('.', $filename);
+        $extension = strtolower(end($extensions));
+
+        if (!in_array($extension, $validExtensions)) {
+            return response()->json([
+                'errors' => [
+                    'error' => 'Invalid file extension. Τhe file must be a file of type: geotiff, geotif, tiff, tif, geojson, shp.',
+                ],
+            ], 422);
+        }
 
         $created = null;
         if (Storage::put($name, $file)) {
@@ -50,7 +63,7 @@ class ProjectFilesController extends Controller
                 'project_id' => $project->id,
                 'user_id' => $request->user()->id,
                 'path' => $name,
-                'filename' => $file->getClientOriginalName(),
+                'filename' => $filename,
             ]);
         }
 
