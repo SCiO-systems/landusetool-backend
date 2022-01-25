@@ -47,6 +47,7 @@ class InitialSchema extends Migration
             $table->boolean('uses_default_lu_classification')->default(true);
             $table->json('lu_classes')->nullable();
             $table->json('tif_images')->nullable();
+            $table->string('step')->nullable();
             $table->foreignId('custom_land_degradation_map_file_id')->nullable();
             $table->foreignId('roi_file_id')->nullable();
             $table->string('status')->default(Project::STATUS_DRAFT);
