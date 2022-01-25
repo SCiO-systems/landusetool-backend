@@ -35,8 +35,8 @@ class UpdateProjectRequest extends FormRequest
             'uses_default_lu_classification' => 'boolean',
             'lu_classes' => 'nullable',
             'step' => 'nullable|string',
-            'custom_land_degradation_map_file_id' => 'nullable|exists:files,id',
-            'roi_file_id' => 'nullable|exists:files,id',
+            'custom_land_degradation_map_file_id' => 'nullable|exists:project_file,id',
+            'roi_file_id' => 'nullable|exists:project_file,id',
         ];
     }
 }

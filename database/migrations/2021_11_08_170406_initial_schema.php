@@ -143,7 +143,7 @@ class InitialSchema extends Migration
      */
     public function down()
     {
-        Schema::drop('project_files');
+        Schema::drop('project_file');
         Schema::drop('project_wocat_slm_technology');
         Schema::drop('project_scenario');
         Schema::drop('project_land_use_matrix_values');
