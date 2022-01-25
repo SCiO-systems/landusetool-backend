@@ -112,7 +112,7 @@ class ScioController extends Controller
             ->withToken($this->token)
             ->acceptJson()
             ->asJson()
-            ->post("$this->baseURI/getGDAMPolygonFeatureByPoint", [
+            ->post("$this->baseURI/getGADMPolygonFeatureByPoint", [
                 'admin_level' => $adminLevel,
                 'resolution' => 'low',
                 'point' => $point,
