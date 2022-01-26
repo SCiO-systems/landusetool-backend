@@ -19,6 +19,10 @@ class Project extends Model
 
     protected $guarded = [];
 
+    protected $attributes = [
+        'status' => self::STATUS_DRAFT
+    ];
+
     public function addUser($id, $role = User::ROLE_USER)
     {
         return ProjectUser::create([
