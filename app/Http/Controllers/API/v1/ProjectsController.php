@@ -118,7 +118,8 @@ class ProjectsController extends Controller
             'uses_default_lu_classification',
             'step',
             'custom_land_degradation_map_file_id',
-            'roi_file_id'
+            'roi_file_id',
+            'land_use_map_file_id',
         ));
 
         if (!empty($request->lu_classes)) {

@@ -36,6 +36,7 @@ class UpdateProjectRequest extends FormRequest
             'lu_classes' => 'nullable',
             'step' => 'nullable|string',
             'custom_land_degradation_map_file_id' => 'nullable|exists:project_file,id',
+            'land_use_map_file_id' => 'nullable|exists:project_file,id',
             'roi_file_id' => 'nullable|exists:project_file,id',
         ];
     }

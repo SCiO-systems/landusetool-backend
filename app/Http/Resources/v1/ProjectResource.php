@@ -30,6 +30,7 @@ class ProjectResource extends JsonResource
             'roi_file_id' => $this->roi_file_id,
             'step' => $this->step,
             'status' => $this->status,
+            'land_use_map_file_id' => $this->land_use_map_file_id,
         ];
     }
 }
