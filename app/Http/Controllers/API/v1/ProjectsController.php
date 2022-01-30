@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\API\v1;
 
 use Http;
-use App\Models\File;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 use App\Utilities\SCIO\TokenGenerator;
-use App\Http\Resources\v1\FileResource;
 use App\Utilities\SCIO\CoordsIDGenerator;
 use App\Http\Resources\v1\ProjectResource;
 use App\Http\Requests\Projects\ShowProjectRequest;
@@ -15,7 +13,7 @@ use App\Http\Requests\Projects\ListProjectsRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\DeleteProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
-use App\Http\Requests\Projects\PublishProjectRequest;
+use App\Http\Requests\Projects\FinaliseProjectRequest;
 use App\Http\Resources\v1\ProjectWocatTechnologyResource;
 use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
 use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
@@ -168,7 +166,7 @@ class ProjectsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function publish(PublishProjectRequest $request, Project $project)
+    public function finalise(FinaliseProjectRequest $request, Project $project)
     {
         // Check if the project exists.
         $foundProject = $request->user()->projects()->findOrFail($project->id);
@@ -176,11 +174,11 @@ class ProjectsController extends Controller
         // Check if the project is in a DRAFT state.
         if ($foundProject->status !== Project::STATUS_DRAFT) {
             return response()->json(['errors' => [
-                'error' => 'The project is not in a DRAFT state and cannot be edited.'
+                'error' => 'The project is not in ' . Project::STATUS_DRAFT . ' state and cannot be finalised.'
             ]], 422);
         }
 
-        $foundProject->update(['status' => Project::STATUS_PUBLISHED]);
+        $foundProject->update(['status' => Project::STATUS_PREPROCESSING]);
 
         return new ProjectResource($foundProject);
     }

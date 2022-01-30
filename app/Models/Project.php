@@ -14,8 +14,9 @@ class Project extends Model
     use HasFactory;
 
     // The available project statuses.
-    public const STATUS_DRAFT      = 'draft';
-    public const STATUS_PUBLISHED  = 'published';
+    public const STATUS_DRAFT           = 'draft';
+    public const STATUS_PREPROCESSING   = 'preprocessing';
+    public const STATUS_PUBLISHED       = 'published';
 
     protected $guarded = [];
 
