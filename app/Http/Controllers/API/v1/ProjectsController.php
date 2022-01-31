@@ -17,6 +17,7 @@ use App\Http\Requests\Projects\FinaliseProjectRequest;
 use App\Http\Resources\v1\ProjectWocatTechnologyResource;
 use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
 use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
+use Exception;
 
 class ProjectsController extends Controller
 {
@@ -133,9 +134,10 @@ class ProjectsController extends Controller
             $identifier = (new CoordsIDGenerator($coordinates))->getId();
 
             $body = [
-                'identifier' => $identifier,
-                'country_ISO' => $request->country_iso_code_3,
-                'area' => $request->polygon,
+                'identifier'    => $identifier,
+                'project_id'    => $identifier,
+                'country_ISO'   => $request->country_iso_code_3,
+                'area'          => $request->polygon,
             ];
 
             $response = Http::timeout($this->requestTimeout)
