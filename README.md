@@ -19,7 +19,7 @@ The project requires **[PHP 7.4/8.0](https://www.php.net/manual/en/install.php)*
     export WWWUSER=${WWWUSER:-$UID}
     export WWWGROUP=${WWWGROUP:-$(id -g)}
     cd docker
-    docker build -t sail/app:8.0 . --build-arg WWWGROUP=$WWWGROUP --platform linux/amd64
+    docker build -t sail-8.0/app . --build-arg WWWGROUP=$WWWGROUP --platform linux/amd64
 
 **NOTE**: The custom docker image includes the scheduler for running Laravel scheduled tasks.
 **NOTE**: The custom docker image includes the workers for running Laravel jobs using the listen
