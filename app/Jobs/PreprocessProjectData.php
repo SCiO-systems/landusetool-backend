@@ -3,11 +3,13 @@
 namespace App\Jobs;
 
 use Http;
+use Log;
 use Exception;
 use App\Models\Project;
+use App\Models\ProjectFile;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Utilities\SCIO\AWSTokenGenerator;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,9 +42,8 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
      */
     public function __construct()
     {
-        $generator = new AWSTokenGenerator();
-        $this->token = $generator->getToken();
-        $this->requestTimeout = 30;
+        $this->token = (new AWSTokenGenerator())->getToken();
+        $this->requestTimeout = 60; // in seconds.
 
         // Get the oldest projects first.
         $this->projects = Project::where('status', Project::STATUS_PREPROCESSING)
@@ -67,18 +68,24 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
 
         foreach ($this->projects as $project) {
 
-            Log::info('Gathering data for project ' . $project->id);
+            Log::info('Starting preprocessing for project.', ['project' => $project->id]);
 
-            $data =  [
-                'project_id'    => $project->id,
-                'ROI'           => $project->polygon,
+            $data = [
+                'project_id' => (string) $project->id,
+                'ROI' => json_decode($project->polygon, true)
             ];
 
             // The project uses custom LU classification.
             if (!$project->uses_default_lu_classification) {
-                Log::info('Project ' . $project->id . ' uses custom classification');
-                $data['land_degradation_map']   = ['custom_map_url' => ''];
-                $data['land_use_map']           = ['custom_map_url' => ''];
+                Log::info('Project ' . $project->id . ' uses custom classification.');
+
+                $ldmUrl = Storage::url(
+                    ProjectFile::find($project->custom_land_degradation_map_file_id)->path
+                );
+                $lumUrl = Storage::url(ProjectFile::find($project->land_use_map_file_id)->path);
+
+                $data['land_degradation_map']   = ['custom_map_url' => $ldmUrl];
+                $data['land_use_map']           = ['custom_map_url' => $lumUrl];
                 $data['land_suitability_map']   = [
                     [
                         'lu_class' => 21,
@@ -93,20 +100,35 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
             $url = $project->uses_default_lu_classification ?
                 $defaultDatasetUrl : $customDatasetUrl;
 
+            $response = null;
             try {
+                Log::info('Sending preprocessing request to service.', [
+                    'url' => $url,
+                    'project' => $project->id
+                ]);
+
                 $response = Http::timeout($this->requestTimeout)
                     ->withToken($this->token)
-                    ->acceptJson()
-                    ->asJson()
-                    ->post($url, $data);
+                    ->post($url, $data)
+                    ->throw();
 
                 if ($response->ok()) {
-                    Log::info('Successfully preprocessed and published project ' . $project->id);
+
+                    $data = $response->json();
+
+                    Log::info('Successfully preprocessed and published project.', [
+                        'project' => $project->id
+                    ]);
+
                     // TODO: Save the urls within the project.
-                    $project->update(['status' => Project::STATUS_PUBLISHED]);
+                    $project->update([
+                        'preprocessing_data' => json_encode($data),
+                        'status'             => Project::STATUS_PUBLISHED
+                    ]);
                 }
             } catch (Exception $ex) {
-                Log::error('Failed to preprocess project ' . $project->id, [
+                Log::error('Failed to preprocess project.', [
+                    'project' => $project->id,
                     'error' => $ex->getMessage()
                 ]);
             }
