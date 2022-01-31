@@ -126,7 +126,7 @@ class ProjectsController extends Controller
         }
 
         // If the user has sent a polygon.
-        if (!empty($project->polygon)) {
+        if (!empty($request->polygon)) {
             $project->setPolygon($request->polygon);
 
             $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
