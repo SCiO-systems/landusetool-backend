@@ -2,21 +2,15 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use Str;
 use Storage;
-use App\Models\File;
 use App\Models\Project;
+use App\Models\ProjectFile;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\v1\FileResource;
-use App\Http\Requests\Files\DeleteFileRequest;
-use App\Http\Requests\Files\UploadFileRequest;
-use App\Http\Requests\Files\GetSingleFileRequest;
+use App\Http\Resources\v1\ProjectFileResource;
+use App\Http\Requests\ProjectFiles\ShowProjectFileRequest;
+use App\Http\Requests\ProjectFiles\ListProjectFilesRequest;
 use App\Http\Requests\ProjectFiles\CreateProjectFileRequest;
 use App\Http\Requests\ProjectFiles\DeleteProjectFileRequest;
-use App\Http\Requests\ProjectFiles\ListProjectFilesRequest;
-use App\Http\Requests\ProjectFiles\ShowProjectFileRequest;
-use App\Http\Resources\v1\ProjectFileResource;
-use App\Models\ProjectFile;
 
 class ProjectFilesController extends Controller
 {
