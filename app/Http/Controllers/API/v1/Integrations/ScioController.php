@@ -23,8 +23,7 @@ class ScioController extends Controller
 
     public function __construct()
     {
-        $generator = new TokenGenerator();
-        $this->token = $generator->getToken();
+        $this->token = (new TokenGenerator())->getToken();
         $this->cacheTtl = env('CACHE_TTL_SECONDS', 3600);
         $this->baseURI = env('SCIO_SERVICES_BASE_API_URL', '');
         $this->requestTimeout = env('REQUEST_TIMEOUT_SECONDS', 10);

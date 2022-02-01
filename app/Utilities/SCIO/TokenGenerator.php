@@ -18,7 +18,7 @@ class TokenGenerator
     public function __construct()
     {
         $this->baseURI = env('SCIO_SERVICES_BASE_API_URL');
-        $this->cacheKey = env('SCIO_CACHE_TOKEN_KEY', 'scio_token');
+        $this->cacheKey = 'scio_token';
         $this->requestTimeout = env('REQUEST_TIMEOUT_SECONDS', 10);
         $this->cacheTtl = env('CACHE_TTL_SECONDS', 3600);
     }
