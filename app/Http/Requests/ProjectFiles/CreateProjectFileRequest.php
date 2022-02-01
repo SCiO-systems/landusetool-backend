@@ -25,6 +25,7 @@ class CreateProjectFileRequest extends FormRequest
     public function rules()
     {
         return [
+            // Extensions check is handled in Controller due to issues with mimetypes.
             'file' => 'required|file|max:50000'
         ];
     }

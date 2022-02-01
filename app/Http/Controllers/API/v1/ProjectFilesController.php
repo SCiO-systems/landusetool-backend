@@ -41,12 +41,12 @@ class ProjectFilesController extends Controller
     public function store(CreateProjectFileRequest $request, Project $project)
     {
         $file = $request->file('file');
-        $name = Str::uuid();
         $filename = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
 
         $validExtensions = ['geotiff', 'geotif', 'tiff', 'tif', 'geojson', 'shp'];
-        $extensions = explode('.', $filename);
-        $extension = strtolower(end($extensions));
+
+        $name = $file->hashName($project->id);
 
         if (!in_array($extension, $validExtensions)) {
             return response()->json([
@@ -57,8 +57,7 @@ class ProjectFilesController extends Controller
         }
 
         $created = null;
-        if (Storage::put($name, $file)) {
-
+        if (Storage::put($name, file_get_contents($file))) {
             $created = ProjectFile::create([
                 'project_id' => $project->id,
                 'user_id' => $request->user()->id,
