@@ -79,28 +79,40 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
             if (!$project->uses_default_lu_classification) {
                 Log::info('Project ' . $project->id . ' uses custom classification.');
 
-                $ldmUrl = Storage::url(
-                    ProjectFile::find($project->custom_land_degradation_map_file_id)->path
-                );
-                $lumUrl = Storage::url(ProjectFile::find($project->land_use_map_file_id)->path);
+                // Use the custom land degradation file if it exists.
+                $data['land_degradation_map'] = ['custom_map_url' => 'n/a'];
+                if (!empty($project->custom_land_degradation_map_file_id)) {
+                    $ldmUrl = Storage::url(
+                        ProjectFile::find($project->custom_land_degradation_map_file_id)->path
+                    );
+                    $data['land_degradation_map'] = ['custom_map_url' => $ldmUrl];
+                }
 
-                $data['land_degradation_map']   = ['custom_map_url' => $ldmUrl];
-                $data['land_use_map']           = ['custom_map_url' => $lumUrl];
-                $data['land_suitability_map']   = [
-                    [
-                        'lu_class' => 21,
-                        'lu_suitability_map_url' => '',
-                    ], [
-                        'lu_class' => 34,
-                        'lu_suitability_map_url' => '',
-                    ]
-                ];
+                // Use the custom land use map file if it exists.
+                if (!empty($project->land_use_map_file_id)) {
+                    $lumUrl = Storage::url(
+                        ProjectFile::find($project->land_use_map_file_id)->path
+                    );
+                    $data['land_use_map'] = ['custom_map_url' => $lumUrl];
+                }
+
+                // Check if we have any land suitability maps.
+                $customClasses = json_decode($project->lu_classes);
+                foreach ($customClasses as $luClass) {
+                    if (!empty($luClass->file_id)) {
+                        $lsmUrl = Storage::url(ProjectFile::find($luClass->file_id)->path);
+
+                        $data['land_suitability_map'][] = [
+                            'lu_class' => $luClass->value,
+                            'lu_suitability_map_url' => $lsmUrl,
+                        ];
+                    }
+                }
             }
 
             $url = $project->uses_default_lu_classification ?
                 $defaultDatasetUrl : $customDatasetUrl;
 
-            $response = null;
             try {
                 Log::info('Sending preprocessing request to service.', [
                     'url' => $url,
@@ -109,21 +121,22 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
 
                 $response = Http::timeout($this->requestTimeout)
                     ->withToken($this->token)
+                    ->asJson()
                     ->post($url, $data)
                     ->throw();
 
                 if ($response->ok()) {
 
+                    // The response we got back from the service.
                     $data = $response->json();
 
-                    Log::info('Successfully preprocessed and published project.', [
-                        'project' => $project->id
-                    ]);
-
-                    // TODO: Save the urls within the project.
                     $project->update([
                         'preprocessing_data' => json_encode($data),
                         'status'             => Project::STATUS_PUBLISHED
+                    ]);
+
+                    Log::info('Successfully preprocessed and published project.', [
+                        'project' => $project->id
                     ]);
                 }
             } catch (Exception $ex) {
