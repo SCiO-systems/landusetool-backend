@@ -102,60 +102,61 @@ class ProjectsController extends Controller
         $foundProject = $request->user()->projects()->findOrFail($project->id);
 
         // Check if the project is in a DRAFT state.
-        if ($foundProject->status !== Project::STATUS_DRAFT) {
-            return response()->json(['errors' => [
-                'error' => 'The project is not in a DRAFT state and cannot be edited.'
-            ]], 422);
-        }
+        if ($foundProject->status === Project::STATUS_DRAFT) {
+            $foundProject->update($request->only(
+                'title',
+                'acronym',
+                'description',
+                'country_iso_code_3',
+                'administrative_level',
+                'uses_default_lu_classification',
+                'step',
+                'custom_land_degradation_map_file_id',
+                'roi_file_id',
+                'land_use_map_file_id',
+            ));
 
-        $foundProject->update($request->only(
-            'title',
-            'acronym',
-            'description',
-            'country_iso_code_3',
-            'administrative_level',
-            'uses_default_lu_classification',
-            'step',
-            'custom_land_degradation_map_file_id',
-            'roi_file_id',
-            'land_use_map_file_id',
-        ));
-
-        if (!empty($request->lu_classes)) {
-            $foundProject->lu_classes = json_encode($request->lu_classes);
-            $foundProject->save();
-        }
-
-        // If the user has sent a polygon.
-        if (!empty($request->polygon)) {
-            $project->setPolygon($request->polygon);
-
-            $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
-            $identifier = (new CoordsIDGenerator($coordinates))->getId();
-
-            $body = [
-                'identifier'    => $identifier,
-                'project_id'    => $identifier,
-                'country_ISO'   => $request->country_iso_code_3,
-                'area'          => $request->polygon,
-            ];
-
-            $response = Http::timeout($this->requestTimeout)
-                ->withToken($this->token)
-                ->acceptJson()
-                ->asJson()
-                ->post("$this->baseURI/tifCropperByROI", $body);
-
-            if ($response->failed()) {
-                return response()->json([
-                    'error' => 'Failed to contact remote service for generating TIF images.'
-                ], $response->status());
+            if (!empty($request->lu_classes)) {
+                $foundProject->lu_classes = json_encode($request->lu_classes);
+                $foundProject->save();
             }
 
-            if ($response->ok()) {
-                $project->tif_images = $response->json();
-                $project->save();
+            // If the user has sent a polygon.
+            if (!empty($request->polygon)) {
+                $project->setPolygon($request->polygon);
+
+                $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
+                $identifier = (new CoordsIDGenerator($coordinates))->getId();
+
+                $body = [
+                    'identifier'    => $identifier,
+                    'project_id'    => $identifier,
+                    'country_ISO'   => $request->country_iso_code_3,
+                    'area'          => $request->polygon,
+                ];
+
+                $response = Http::timeout($this->requestTimeout)
+                    ->withToken($this->token)
+                    ->acceptJson()
+                    ->asJson()
+                    ->post("$this->baseURI/tifCropperByROI", $body);
+
+                if ($response->failed()) {
+                    return response()->json([
+                        'error' => 'Failed to contact remote service for generating TIF images.'
+                    ], $response->status());
+                }
+
+                if ($response->ok()) {
+                    $project->tif_images = $response->json();
+                    $project->save();
+                }
             }
+        }
+
+        // If the project is published we can only update the step.
+        if ($foundProject->status === Project::STATUS_PUBLISHED) {
+            $foundProject->update($request->only('step'));
         }
 
         return new ProjectResource($foundProject);
