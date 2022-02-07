@@ -17,7 +17,6 @@ use App\Http\Requests\Projects\FinaliseProjectRequest;
 use App\Http\Resources\v1\ProjectWocatTechnologyResource;
 use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
 use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
-use Exception;
 
 class ProjectsController extends Controller
 {
@@ -41,7 +40,7 @@ class ProjectsController extends Controller
      */
     public function index(ListProjectsRequest $request)
     {
-        $projects = $request->user()->projects()->paginate(15);
+        $projects = $request->user()->projects()->get();
 
         return ProjectResource::collection($projects);
     }
