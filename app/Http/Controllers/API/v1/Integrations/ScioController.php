@@ -204,6 +204,8 @@ class ScioController extends Controller
             return response()->json(['message' => 'Polygon file not found.'], 404);
         }
 
+        $polygonFileContents = Storage::get($polygonFile->path);
+
         $response = Http::timeout($this->requestTimeout)
             ->withToken($this->lambdaToken)
             ->acceptJson()
@@ -211,9 +213,19 @@ class ScioController extends Controller
             ->post(env('SCIO_CUSTOM_ROI_HECTARES_SERVICE_URL'), [
                 'project_id' => (string) $project->id,
                 'ROI' => $roiPolygon,
-                'polygon' => json_decode(Storage::get($polygonFile->path)),
+                'polygon' => json_decode($polygonFileContents),
             ]);
 
-        return response()->json($response->json(), $response->status());
+        if ($response->failed()) {
+            return response()->json(['message' => 'Failed to get hectares of intersecting area.'], 500);
+        }
+
+        $hectares = $response->json();
+
+        if (empty($hectares)) {
+            return response()->json(['hectares' => 0]);
+        }
+
+        return response()->json(['hectares' => $hectares]);
     }
 }
