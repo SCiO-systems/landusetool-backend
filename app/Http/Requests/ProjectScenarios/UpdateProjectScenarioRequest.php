@@ -25,6 +25,11 @@ class UpdateProjectScenarioRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'name' => 'nullable|string',
+            'from_year' => 'nullable|numeric',
+            'to_year' => 'nullable|numeric',
+            'content' => 'nullable|string'
+        ];
     }
 }

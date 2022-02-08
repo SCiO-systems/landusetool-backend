@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\API\v1\Integrations;
 
+use File;
 use Http;
 use Cache;
+use Storage;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 use App\Utilities\SCIO\TokenGenerator;
 use App\Utilities\SCIO\WocatTransformer;
+use App\Utilities\SCIO\AWSTokenGenerator;
 use App\Http\Requests\Integrations\ListLDNTargetsRequest;
+use App\Http\Requests\Integrations\CalculateHectaresRequest;
 use App\Http\Requests\Integrations\GetWocatTechnologiesRequest;
 use App\Http\Requests\LandCover\GetLandCoverPercentagesRequest;
 use App\Http\Requests\Polygons\GetPolygonsByCoordinatesRequest;
@@ -20,10 +24,12 @@ class ScioController extends Controller
     protected $baseURI;
     protected $requestTimeout;
     protected $token;
+    protected $lambdaToken;
 
     public function __construct()
     {
         $this->token = (new TokenGenerator())->getToken();
+        $this->lambdaToken = (new AWSTokenGenerator())->getToken();
         $this->cacheTtl = env('CACHE_TTL_SECONDS', 3600);
         $this->baseURI = env('SCIO_SERVICES_BASE_API_URL', '');
         $this->requestTimeout = env('REQUEST_TIMEOUT_SECONDS', 10);
@@ -180,5 +186,34 @@ class ScioController extends Controller
             [],
             JSON_UNESCAPED_SLASHES
         );
+    }
+
+    /**
+     * Get the intersecting areas between the ROI and another polygon.
+     *
+     * @param CalculateHectaresRequest $request
+     * @param Project $project
+     * @return void
+     */
+    public function getIntersectingArea(CalculateHectaresRequest $request, Project $project)
+    {
+        $roiPolygon = json_decode($project->polygon);
+        $polygonFile = File::find($request->polygon_file_id);
+
+        if (empty($polygonFile)) {
+            return response()->json(['message' => 'Polygon file not found.'], 404);
+        }
+
+        $response = Http::timeout($this->requestTimeout)
+            ->withToken($this->lambdaToken)
+            ->acceptJson()
+            ->asJson()
+            ->post(env('SCIO_CUSTOM_ROI_HECTARES_SERVICE_URL'), [
+                'project_id' => (string) $project->id,
+                'ROI' => $roiPolygon,
+                'polygon' => json_decode(Storage::get($polygonFile->path)),
+            ]);
+
+        return response()->json($response->json(), $response->status());
     }
 }

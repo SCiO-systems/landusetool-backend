@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Models\Project;
 use App\Models\ProjectScenario;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\v1\ProjectScenarioResource;
 use App\Http\Requests\ProjectScenarios\ListProjectScenariosRequest;
 use App\Http\Requests\ProjectScenarios\CreateProjectScenarioRequest;
 use App\Http\Requests\ProjectScenarios\DeleteProjectScenarioRequest;
@@ -21,7 +22,7 @@ class ProjectScenariosController extends Controller
     {
         $scenarios = $project->scenarios()->get();
 
-        return response()->json($scenarios);
+        return ProjectScenarioResource::collection($scenarios);
     }
 
     /**
@@ -32,9 +33,12 @@ class ProjectScenariosController extends Controller
      */
     public function store(CreateProjectScenarioRequest $request, Project $project)
     {
-        $scenario = $project->scenarios()->create($request->all());
+        $data = $request->only(['from_year', 'to_year', 'name']);
+        $data['content'] = json_encode($request->content);
 
-        return response()->json($scenario);
+        $scenario = $project->scenarios()->create($data);
+
+        return new ProjectScenarioResource($scenario);
     }
 
     /**
@@ -50,7 +54,7 @@ class ProjectScenariosController extends Controller
     ) {
         $scenario = $project->scenarios()->findOrFail($scenario->id);
 
-        return response()->json($scenario);
+        return new ProjectScenarioResource($scenario);
     }
 
     /**
@@ -66,9 +70,13 @@ class ProjectScenariosController extends Controller
         ProjectScenario $scenario
     ) {
         $scenario = $project->scenarios()->findOrFail($scenario->id);
-        $scenario->update($request->all());
 
-        return response()->json($scenario);
+        $data = $request->only(['from_year', 'to_year', 'name']);
+        $data['content'] = json_encode($request->content);
+
+        $scenario->update($data);
+
+        return new ProjectScenarioResource($scenario);
     }
 
     /**

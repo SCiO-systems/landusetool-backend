@@ -107,9 +107,9 @@ class InitialSchema extends Migration
             $table->id();
             $table->foreignId('project_id');
             $table->string('name');
-            $table->string('from_date');
-            $table->string('to_date');
-            $table->json('land_use');
+            $table->string('from_year');
+            $table->string('to_year');
+            $table->json('content')->nullable();
 
             $table->timestamps();
         });

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\ProjectScenarios;
+namespace App\Http\Requests\Integrations;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProjectScenarioRequest extends FormRequest
+class CalculateHectaresRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,8 +15,9 @@ class CreateProjectScenarioRequest extends FormRequest
     public function authorize()
     {
         $isProjectOwner = $this->project->owner->id === $this->user()->id;
+        $isProjectFile = $this->project->files()->where('id', $this->polygon_file_id)->exists();
 
-        return $isProjectOwner;
+        return $isProjectOwner && $isProjectFile;
     }
 
     /**
@@ -26,10 +28,7 @@ class CreateProjectScenarioRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'from_year' => 'required|numeric',
-            'to_year' => 'required|numeric',
-            'content' => 'nullable|string'
+            'polygon_file_id' => 'required|exists:project_files,id',
         ];
     }
 }
