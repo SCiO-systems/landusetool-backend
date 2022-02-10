@@ -40,7 +40,7 @@ class ProjectFilesController extends Controller
 
         $validExtensions = ['geotiff', 'geotif', 'tiff', 'tif', 'geojson', 'shp'];
 
-        $name = $file->hashName($project->id);
+        $name = $file->hashName($project->id) . '.' . $extension;
 
         if (!in_array($extension, $validExtensions)) {
             return response()->json([
