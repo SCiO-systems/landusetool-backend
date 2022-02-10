@@ -29,7 +29,7 @@ class UpdateProjectScenarioRequest extends FormRequest
             'name' => 'nullable|string',
             'from_year' => 'nullable|numeric',
             'to_year' => 'nullable|numeric',
-            'content' => 'nullable|string'
+            'content' => 'nullable'
         ];
     }
 }

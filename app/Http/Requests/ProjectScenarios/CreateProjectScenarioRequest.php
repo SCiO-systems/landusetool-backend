@@ -29,7 +29,7 @@ class CreateProjectScenarioRequest extends FormRequest
             'name' => 'required|string',
             'from_year' => 'required|numeric',
             'to_year' => 'required|numeric',
-            'content' => 'nullable|string'
+            'content' => 'nullable'
         ];
     }
 }
