@@ -86,6 +86,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         Route::put('projects/{project}/indicators', [ProjectIndicatorsController::class, 'update']);
 
         // Project scenarios management.
+        Route::delete('projects/{project}/scenarios', [
+            ProjectScenariosController::class, 'clearScenarios'
+        ]);
+
         Route::apiResource('projects.scenarios', ProjectScenariosController::class);
 
         // Project invites.

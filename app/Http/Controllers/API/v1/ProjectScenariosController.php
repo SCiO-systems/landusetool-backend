@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\ProjectScenario;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ProjectScenarioResource;
+use App\Http\Requests\ProjectScenarios\DeleteAllScenariosRequest;
 use App\Http\Requests\ProjectScenarios\ListProjectScenariosRequest;
 use App\Http\Requests\ProjectScenarios\CreateProjectScenarioRequest;
 use App\Http\Requests\ProjectScenarios\DeleteProjectScenarioRequest;
@@ -92,6 +93,22 @@ class ProjectScenariosController extends Controller
     ) {
         $scenario = $project->scenarios()->findOrFail($scenario->id);
         $scenario->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function clearScenarios(
+        DeleteAllScenariosRequest $request,
+        Project $project,
+        ProjectScenario $scenario
+    ) {
+        $project->scenarios()->delete();
 
         return response()->json(null, 204);
     }
