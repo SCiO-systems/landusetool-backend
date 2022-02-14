@@ -28,7 +28,7 @@ class CalculateHectaresRequest extends FormRequest
     public function rules()
     {
         return [
-            'polygon_file_id' => 'required|exists:project_files,id',
+            'polygon_file_id' => 'required|exists:project_file,id',
         ];
     }
 }
