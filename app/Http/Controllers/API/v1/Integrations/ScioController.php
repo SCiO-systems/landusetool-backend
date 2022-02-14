@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API\v1\Integrations;
 
-use File;
 use Http;
 use Cache;
 use Storage;
 use App\Models\Project;
+use App\Models\ProjectFile;
 use App\Http\Controllers\Controller;
 use App\Utilities\SCIO\TokenGenerator;
 use App\Utilities\SCIO\WocatTransformer;
@@ -198,7 +198,7 @@ class ScioController extends Controller
     public function getIntersectingArea(CalculateHectaresRequest $request, Project $project)
     {
         $roiPolygon = json_decode($project->polygon);
-        $polygonFile = File::find($request->polygon_file_id);
+        $polygonFile = ProjectFile::find($request->polygon_file_id);
 
         if (empty($polygonFile)) {
             return response()->json(['message' => 'Polygon file not found.'], 404);
