@@ -31,7 +31,9 @@ class ProjectResource extends JsonResource
             'step' => $this->step,
             'status' => $this->status,
             'land_use_map_file_id' => $this->land_use_map_file_id,
-            'preprocessing_data' => json_decode($this->preprocessing_data)
+            'preprocessing_data' => json_decode($this->preprocessing_data),
+            'transition_impact_matrix_data' => json_decode($this->transition_impact_matrix_data),
+            'has_edited_transition_matrix_data' => $this->has_edited_transition_matrix_data,
         ];
     }
 }

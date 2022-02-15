@@ -38,6 +38,8 @@ class UpdateProjectRequest extends FormRequest
             'custom_land_degradation_map_file_id' => 'nullable|exists:project_file,id',
             'land_use_map_file_id' => 'nullable|exists:project_file,id',
             'roi_file_id' => 'nullable|exists:project_file,id',
+            'transition_impact_matrix_data' => 'nullable',
+            'has_edited_transition_matrix_data' => 'nullable|boolean',
         ];
     }
 }

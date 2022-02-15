@@ -155,7 +155,13 @@ class ProjectsController extends Controller
 
         // If the project is published we can only update the step.
         if ($foundProject->status === Project::STATUS_PUBLISHED) {
-            $foundProject->update($request->only('step'));
+            $foundProject->update($request->only('step', 'has_edited_transition_matrix_data'));
+
+            if (!empty($request->transition_impact_matrix_data)) {
+                $foundProject->update([
+                    'transition_impact_matrix_data' => json_encode($request->transition_impact_matrix_data)
+                ]);
+            }
         }
 
         return new ProjectResource($foundProject);
