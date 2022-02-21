@@ -128,10 +128,24 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
                 if ($response->ok()) {
 
                     // The response we got back from the service.
-                    $data = $response->json();
+                    $preprocessingData = $response->json();
+
+                    // Send the polygon in order to get back the total ROI area in hectares.
+                    $response = Http::timeout($this->requestTimeout)
+                        ->withToken($this->token)
+                        ->acceptJson()
+                        ->asJson()
+                        ->post(env('SCIO_CUSTOM_ROI_HECTARES_SERVICE_URL'), [
+                            'project_id' => (string) $project->id,
+                            'ROI' => $data['ROI'],
+                            'polygon' => $data['ROI'],
+                        ]);
+
+                    // Get the ROI area in hectares.
+                    $preprocessingData['total_roi_area'] = $response->json();
 
                     $project->update([
-                        'preprocessing_data' => json_encode($data),
+                        'preprocessing_data' => json_encode($preprocessingData),
                         'status'             => Project::STATUS_PUBLISHED
                     ]);
 
