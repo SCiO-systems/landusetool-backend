@@ -131,6 +131,11 @@ class Project extends Model
         return $this->hasMany(ProjectFile::class);
     }
 
+    public function focusAreas()
+    {
+        return $this->hasMany(ProjectFocusArea::class);
+    }
+
     public function delete()
     {
         $this->deleteFiles();
@@ -142,6 +147,7 @@ class Project extends Model
         $this->technologies()->delete();
         $this->invites()->delete();
         $this->landUseMatrix()->delete();
+        $this->focusAreas()->delete();
 
         return parent::delete();
     }

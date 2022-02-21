@@ -13,6 +13,7 @@ use App\Http\Controllers\API\v1\UserPasswordController;
 use App\Http\Controllers\API\v1\ProjectInvitesController;
 use App\Http\Controllers\API\v1\ProjectScenariosController;
 use App\Http\Controllers\API\v1\Integrations\ScioController;
+use App\Http\Controllers\API\v1\ProjectFocusAreasController;
 use App\Http\Controllers\API\v1\ProjectIndicatorsController;
 use App\Http\Controllers\API\v1\ProjectLandUseMatrixController;
 
@@ -91,6 +92,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         ]);
 
         Route::apiResource('projects.scenarios', ProjectScenariosController::class);
+
+        Route::apiResource('projects.focus_areas', ProjectFocusAreasController::class)
+            ->only(['index', 'store', 'destroy'])
+            ->parameters(['focus_areas' => 'focusArea']);
 
         // Project invites.
         Route::apiResource('projects.invites', ProjectInvitesController::class)
