@@ -40,6 +40,8 @@ class UpdateProjectRequest extends FormRequest
             'roi_file_id' => 'nullable|exists:project_file,id',
             'transition_impact_matrix_data' => 'nullable',
             'has_edited_transition_matrix_data' => 'nullable|boolean',
+            'land_use_suitability_method' => 'nullable|boolean',
+            'land_management_sustainability_method' => 'nullable|boolean'
         ];
     }
 }

@@ -34,6 +34,8 @@ class ProjectResource extends JsonResource
             'preprocessing_data' => json_decode($this->preprocessing_data),
             'transition_impact_matrix_data' => json_decode($this->transition_impact_matrix_data),
             'has_edited_transition_matrix_data' => $this->has_edited_transition_matrix_data,
+            'land_use_suitability_method' => $this->land_use_suitability_method,
+            'land_management_sustainability_method' => $this->land_management_sustainability_method
         ];
     }
 }
