@@ -34,7 +34,10 @@ class ProjectFocusAreasController extends Controller
      */
     public function store(CreateProjectFocusAreaRequest $request, Project $project)
     {
-        $focusArea = $project->focusAreas()->create($request->only('name', 'file_id'));
+        $data = $request->only('name', 'file_id');
+        $data['user_id'] = $request->user()->id;
+
+        $focusArea = $project->focusAreas()->create($data);
 
         return new ProjectFocusAreaResource($focusArea);
     }
