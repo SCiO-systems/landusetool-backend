@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Models\Project;
 use App\Models\ProjectFocusArea;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\v1\ProjectFocusAreaResource;
 use App\Http\Requests\ProjectFocusAreas\ShowProjectFocusAreaRequest;
 use App\Http\Requests\ProjectFocusAreas\ListProjectFocusAreasRequest;
@@ -66,7 +67,9 @@ class ProjectFocusAreasController extends Controller
         Project $project,
         ProjectFocusArea $focusArea
     ) {
-        if ($focusArea->delete()) {
+        $file = $focusArea->file();
+        $isFileDeleted = Storage::delete($file->path) && $file->delete();
+        if ($isFileDeleted && $focusArea->delete()) {
             return response()->json(null, 204);
         }
 
