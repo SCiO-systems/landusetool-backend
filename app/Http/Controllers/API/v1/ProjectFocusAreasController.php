@@ -67,9 +67,8 @@ class ProjectFocusAreasController extends Controller
         Project $project,
         ProjectFocusArea $focusArea
     ) {
-        $file = $focusArea->file();
-        $isFileDeleted = Storage::delete($file->path) && $file->delete();
-        if ($isFileDeleted && $focusArea->delete()) {
+        $isFileDeleted = Storage::delete($focusArea->file->path);
+        if ($isFileDeleted && $focusArea->file()->delete() && $focusArea->delete()) {
             return response()->json(null, 204);
         }
 

@@ -24,6 +24,6 @@ class ProjectFocusArea extends Model
 
     public function file()
     {
-        return $this->belongsTo(ProjectFile::class);
+        return $this->belongsTo(ProjectFile::class, 'file_id');
     }
 }
