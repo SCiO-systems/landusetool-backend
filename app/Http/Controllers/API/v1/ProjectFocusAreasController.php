@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Models\Project;
-use Illuminate\Http\Request;
+use App\Models\ProjectFocusArea;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\v1\ProjectFocusAreaResource;
+use App\Http\Requests\ProjectFocusAreas\ShowProjectFocusAreaRequest;
+use App\Http\Requests\ProjectFocusAreas\ListProjectFocusAreasRequest;
 use App\Http\Requests\ProjectFocusAreas\CreateProjectFocusAreaRequest;
 use App\Http\Requests\ProjectFocusAreas\DeleteProjectFocusAreaRequest;
-use App\Http\Resources\ProjectFocusAreaResource;
-use App\Http\Requests\ProjectFocusAreas\ListProjectFocusAreasRequest;
-use App\Http\Requests\ProjectFocusAreas\ShowProjectFocusAreaRequest;
-use App\Models\ProjectFocusArea;
 
 class ProjectFocusAreasController extends Controller
 {
