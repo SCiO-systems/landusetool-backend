@@ -34,7 +34,7 @@ class LandCoverClassExtractor
     {
         $this->project = $project;
         if ($overridePolygon !== null) {
-            $this->ROI = $overridePolygon;
+            $this->ROI = json_decode($overridePolygon);
         } else {
             $this->ROI = json_decode($project->polygon, true);
         }
