@@ -18,6 +18,7 @@ class ProjectFocusAreaResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'file' => new ProjectFileResource($this->file),
+            'extracted_classes' => json_decode($this->extracted_classes),
         ];
     }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Log;
 use App\Models\Project;
 use App\Models\ProjectFocusArea;
+use App\Models\ProjectFile;
 use App\Http\Controllers\Controller;
+use App\Utilities\SCIO\LandCoverClassExtractor;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\v1\ProjectFocusAreaResource;
 use App\Http\Requests\ProjectFocusAreas\ShowProjectFocusAreaRequest;
@@ -35,6 +38,16 @@ class ProjectFocusAreasController extends Controller
     public function store(CreateProjectFocusAreaRequest $request, Project $project)
     {
         $data = $request->only('name', 'file_id');
+
+        try {
+            $file = Storage::get(ProjectFile::find($data['file_id'])->path);
+            $data['extracted_classes'] = (new LandCoverClassExtractor($project, file_get_contents($file)));
+        } catch (\Exception $ex) {
+            Log::error('During creation of focus area with file_id: ' . $data['file_id'] . ' an error
+                occured while trying to extract land cover classses: ' . $ex->getMessage());
+            return response()->json(null, 500);
+        }
+
         $data['user_id'] = $request->user()->id;
 
         $focusArea = $project->focusAreas()->create($data);

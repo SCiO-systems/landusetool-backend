@@ -117,6 +117,15 @@ class LandCoverClassExtractor
 
     public function extractClasses()
     {
-        return $this->makeRequest($this->preparePayload());
+        try {
+            $response = $this->makeRequest($this->preparePayload());
+            if (!array_key_exists("land_cover_hectares_per_class", $response)) {
+                return [];
+            }
+            $hectaresPerClass = $response["land_cover_hectares_per_class"];
+            return is_array($hectaresPerClass) ? array_keys($hectaresPerClass) : [];
+        } catch (Exception $ex) {
+            throw $ex;
+        }
     }
 }
