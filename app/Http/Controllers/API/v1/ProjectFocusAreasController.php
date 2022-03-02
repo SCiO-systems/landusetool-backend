@@ -41,7 +41,16 @@ class ProjectFocusAreasController extends Controller
 
         try {
             $file = Storage::get(ProjectFile::find($data['file_id'])->path);
-            $data['extracted_classes'] = (new LandCoverClassExtractor($project, file_get_contents($file)));
+            $data['extracted_classes'] = (new LandCoverClassExtractor($project, $file))->extractClasses();
+            if (count($data['extracted_classes']) === 0) {
+                Storage::delete(ProjectFile::find($data['file_id'])->path);
+                return response()->json([
+                    'errors' => [
+                        'error' => 'Could not find any land use types in the polygon provided.',
+                    ]
+                ], 422);
+            }
+            $data['extracted_classes'] = json_encode($data['extracted_classes']);
         } catch (\Exception $ex) {
             Log::error('During creation of focus area with file_id: ' . $data['file_id'] . ' an error
                 occured while trying to extract land cover classses: ' . $ex->getMessage());
