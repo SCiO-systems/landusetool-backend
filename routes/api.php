@@ -16,6 +16,7 @@ use App\Http\Controllers\API\v1\Integrations\ScioController;
 use App\Http\Controllers\API\v1\ProjectFocusAreasController;
 use App\Http\Controllers\API\v1\ProjectIndicatorsController;
 use App\Http\Controllers\API\v1\ProjectLandUseMatrixController;
+use App\Http\Controllers\API\v1\ProjectFocusAreaEvaluationsController;
 
 // API v1
 Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function () {
@@ -96,6 +97,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         Route::apiResource('projects.focus_areas', ProjectFocusAreasController::class)
             ->only(['index', 'store', 'destroy'])
             ->parameters(['focus_areas' => 'focusArea']);
+
+        Route::apiResource('projects.focus_area_evaluations', ProjectFocusAreaEvaluationsController::class)
+            ->only(['store', 'show', 'update'])
+            ->parameters(['focus_area_evaluations' => 'focusAreaEvaluation']);
 
         // Project invites.
         Route::apiResource('projects.invites', ProjectInvitesController::class)
