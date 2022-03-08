@@ -99,7 +99,7 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ->parameters(['focus_areas' => 'focusArea']);
 
         Route::apiResource('projects.focus_area_evaluations', ProjectFocusAreaEvaluationsController::class)
-            ->only(['store', 'show', 'update'])
+            ->only(['index', 'store', 'show', 'update'])
             ->parameters(['focus_area_evaluations' => 'focusAreaEvaluation']);
 
         // Project invites.

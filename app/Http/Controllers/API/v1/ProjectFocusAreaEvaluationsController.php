@@ -7,11 +7,27 @@ use App\Models\ProjectFocusAreaEvaluation;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\ProjectFocusAreaEvaluationResource;
 use App\Http\Requests\ProjectFocusAreaEvaluations\CreateProjectFocusAreaEvaluationRequest;
+use App\Http\Requests\ProjectFocusAreaEvaluations\ListProjectFocusAreaEvaluationsRequest;
 use App\Http\Requests\ProjectFocusAreaEvaluations\ShowProjectFocusAreaEvaluationRequest;
 use App\Http\Requests\ProjectFocusAreaEvaluations\UpdateProjectFocusAreaEvaluationRequest;
 
 class ProjectFocusAreaEvaluationsController extends Controller
 {
+
+    /**
+     * Display all the resources.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(
+        ListProjectFocusAreaEvaluationsRequest $request,
+        Project $project,
+    ) {
+        $focusAreaIds = $project->focusAreas()->pluck('id')->toArray();
+        $evaluations = ProjectFocusAreaEvaluation::whereIn('project_focus_area_id', $focusAreaIds)->get();
+        return ProjectFocusAreaEvaluationResource::collection($evaluations);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
