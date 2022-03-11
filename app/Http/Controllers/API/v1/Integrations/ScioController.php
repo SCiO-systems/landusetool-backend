@@ -14,6 +14,7 @@ use App\Utilities\SCIO\AWSTokenGenerator;
 use App\Http\Requests\Integrations\ListLDNTargetsRequest;
 use App\Http\Requests\Integrations\CalculateHectaresRequest;
 use App\Http\Requests\Integrations\GetWocatTechnologiesRequest;
+use App\Http\Requests\Integrations\GetWocatTechnologyRequest;
 use App\Http\Requests\LandCover\GetLandCoverPercentagesRequest;
 use App\Http\Requests\Polygons\GetPolygonsByCoordinatesRequest;
 use App\Http\Requests\Polygons\GetAdminLevelAreaPolygonsRequest;
@@ -182,6 +183,32 @@ class ScioController extends Controller
 
         return response()->json(
             ['data' => ['items' => $items, 'total' => $total]],
+            $response->status(),
+            [],
+            JSON_UNESCAPED_SLASHES
+        );
+    }
+
+    public function getWocatTechnology(GetWocatTechnologyRequest $request, $techId)
+    {
+        $response = Http::timeout($this->requestTimeout)
+            ->withToken($this->token)
+            ->acceptJson()
+            ->asJson()
+            ->post("$this->baseURI/technology", [
+                'id' => $techId,
+                'alias' => 'wocat_technologies',
+            ]);
+
+        $item = null;
+
+        if ($response->ok()) {
+            $data = [$response->json('data.response')];
+            $item = (new WocatTransformer($data))->getTransformedOutput()[0];
+        }
+
+        return response()->json(
+            ['data' => ['item' => $item]],
             $response->status(),
             [],
             JSON_UNESCAPED_SLASHES

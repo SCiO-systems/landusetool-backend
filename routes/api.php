@@ -136,6 +136,8 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         // WOCAT TECHNOLOGIES
         Route::get('/wocat_technologies', [ScioController::class, 'getWocatTechnologies'])
             ->name('wocat_technologies');
+        Route::get('/wocat_technologies/{techId}', [ScioController::class, 'getWocatTechnology'])
+            ->name('wocat_technologies.show');
 
         // USER
 
