@@ -41,7 +41,7 @@ class ProjectFocusAreaEvaluationsController extends Controller
 
         $focusAreaEvaluation = ProjectFocusAreaEvaluation::create($data);
 
-        return new ProjectFocusAreaEvaluation($focusAreaEvaluation);
+        return new ProjectFocusAreaEvaluationResource($focusAreaEvaluation);
     }
 
     /**
