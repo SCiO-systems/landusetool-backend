@@ -36,7 +36,7 @@ class ProjectFilesController extends Controller
     {
         $file = $request->file('file');
         $filename = $file->getClientOriginalName();
-        $extension = $file->extension();
+        $extension = $file->getClientOriginalExtension();
 
         $validExtensions = ['geotiff', 'geotif', 'tiff', 'tif', 'geojson', 'shp'];
 
