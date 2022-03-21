@@ -75,6 +75,14 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
                 'ROI' => json_decode($project->polygon, true)
             ];
 
+            // If there is a roi_file_id append it to data
+            if (!empty($project->roi_file_id)) {
+                $roiFileUrl = Storage::url(
+                    ProjectFile::find($project->roi_file_id)->path
+                );
+                $data['ROI_file_url'] = $roiFileUrl;
+            }
+
             // The project uses custom LU classification.
             if (!$project->uses_default_lu_classification) {
                 Log::info('Project ' . $project->id . ' uses custom classification.');
