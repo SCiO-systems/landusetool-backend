@@ -56,6 +56,14 @@ class LandCoverClassExtractor
             'ROI' => $this->ROI,
         ];
 
+        // If there is a roi_file_id append it to data
+        if (!empty($this->project->roi_file_id)) {
+            $roiFileUrl = Storage::url(
+                ProjectFile::find($this->project->roi_file_id)->path
+            );
+            $data['ROI_file_url'] = $roiFileUrl;
+        }
+
         if (!$this->project->uses_default_lu_classification) {
             // Use the custom land degradation file if it exists.
             $data['land_degradation_map'] = ['custom_map_url' => 'n/a'];
