@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Projects;
 
+use App\Models\ProjectWocatTechnology;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ListProjectTechnologiesRequest extends FormRequest
 {
@@ -25,6 +27,13 @@ class ListProjectTechnologiesRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'project_focus_area_id' => 'nullable|numeric',
+            'lu_class' => 'nullable|string',
+            'status' => [
+                'nullable',
+                Rule::in([ProjectWocatTechnology::STATUS_FINAL, ProjectWocatTechnology::STATUS_PROPOSAL])
+            ]
+        ];
     }
 }

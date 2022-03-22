@@ -4,7 +4,7 @@ namespace App\Http\Requests\Projects;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChooseProjectTechnologyRequest extends FormRequest
+class VoteProjectTechnologyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class ChooseProjectTechnologyRequest extends FormRequest
     public function rules()
     {
         return [
-            'technology_id' => 'string|required',
+            'project_wocat_slm_technology_id' => 'integer|required',
         ];
     }
 }

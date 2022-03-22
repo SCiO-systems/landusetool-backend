@@ -24,7 +24,9 @@ class ProjectFocusAreaEvaluationsController extends Controller
         Project $project,
     ) {
         $focusAreaIds = $project->focusAreas()->pluck('id')->toArray();
-        $evaluations = ProjectFocusAreaEvaluation::whereIn('project_focus_area_id', $focusAreaIds)->get();
+        $evaluations = ProjectFocusAreaEvaluation::whereIn('project_focus_area_id', $focusAreaIds)
+            ->where('user_id', $request->user()->id)
+            ->get();
         return ProjectFocusAreaEvaluationResource::collection($evaluations);
     }
 

@@ -70,15 +70,20 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ScioController::class, 'getLandCoverPercentages'
         ])->name('projects.land_cover_percentages');
 
-        // Project selected wocat technologies.
+        // Project proposed or final wocat technologies.
         Route::get('projects/{project}/wocat_technologies', [
             ProjectsController::class, 'getWocatTechnologies'
         ])->name('projects.wocat_technologies');
 
-        // Choose a WOCAT technology.
-        Route::post('projects/{project}/choose_wocat_technology', [
-            ProjectsController::class, 'chooseWocatTechnology'
-        ])->name('projects.choose_wocat_technology');
+        // Propose a WOCAT technology.
+        Route::post('projects/{project}/propose_wocat_technology', [
+            ProjectsController::class, 'proposeWocatTechnology'
+        ])->name('projects.propose_wocat_technology');
+
+        // Vote for a WOCAT technology.
+        Route::post('projects/{project}/vote_wocat_technology', [
+            ProjectsController::class, 'voteWocatTechnology'
+        ])->name('projects.vote_wocat_technology');
 
         // Project management.
         Route::apiResource('projects', ProjectsController::class);

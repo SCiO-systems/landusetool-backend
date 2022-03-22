@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\v1;
 
 use Http;
 use App\Models\Project;
+use App\Models\ProjectWocatTechnology;
 use App\Http\Controllers\Controller;
 use App\Utilities\SCIO\TokenGenerator;
 use App\Utilities\SCIO\CoordsIDGenerator;
@@ -15,8 +16,10 @@ use App\Http\Requests\Projects\DeleteProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Requests\Projects\FinaliseProjectRequest;
 use App\Http\Resources\v1\ProjectWocatTechnologyResource;
-use App\Http\Requests\Projects\ChooseProjectTechnologyRequest;
+use App\Http\Requests\Projects\ProposeProjectTechnologyRequest;
 use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
+use App\Http\Requests\Projects\VoteProjectTechnologyRequest;
+use App\Models\ProjectWocatTechnologyVote;
 
 class ProjectsController extends Controller
 {
@@ -223,26 +226,104 @@ class ProjectsController extends Controller
      */
     public function getWocatTechnologies(ListProjectTechnologiesRequest $request, Project $project)
     {
-        $technologies = $project->technologies()->with('user')->get();
+        $technologies = $project->technologies()
+                                ->with(['user', 'focusArea']);
+
+        if (!empty($request->status)) {
+            $technologies = $technologies->where('status', $request->status);
+        }
+
+        if (!empty($request->project_focus_area_id)) {
+            $technologies = $technologies->where('project_focus_area_id', $request->project_focus_area_id);
+        }
+
+        if (!empty($request->lu_class)) {
+            $technologies = $technologies->where('lu_class', $request->lu_class);
+        }
+
+        $technologies = $technologies->get();
 
         return ProjectWocatTechnologyResource::collection($technologies);
     }
 
     /**
-     * Choose the WOCAT technology of a project.
+     * Propose WOCAT technology of a project for the specified focus area and lu class.
      */
-    public function chooseWocatTechnology(ChooseProjectTechnologyRequest $request, Project $project)
+    public function proposeWocatTechnology(ProposeProjectTechnologyRequest $request, Project $project)
     {
         $foundProject = $request->user()->projects()->findOrFail($project->id);
 
-        $foundProject->technologies()->save([
+        $foundProposal = $foundProject->technologies()
+                                      ->where('project_focus_area_id', $request->project_focus_area_id)
+                                      ->where('lu_class', $request->lu_class)
+                                      ->first();
+
+        if ($foundProposal) {
+            return response()->json(['errors' => [
+                'error' => 'There\'s already a proposal for this focus area & land use.'
+            ]], 422);
+        }
+
+        $status = ProjectWocatTechnology::STATUS_PROPOSAL;
+        if ($foundProject->users()->count() === 1) {
+            // if there's only 1 user for this project make the proposal final
+            $status = ProjectWocatTechnology::STATUS_FINAL;
+        }
+
+        ProjectWocatTechnology::create([
             'user_id' => $request->user()->id,
             'project_id' => $project->id,
+            'project_focus_area_id' => $request->project_focus_area_id,
+            'lu_class' => $request->lu_class,
+            'status' => $status,
             'technology_id' => $request->technology_id,
         ]);
 
-        $technologies = $foundProject->technologies();
+        return response()->json(null, 201);
+    }
 
-        return ProjectWocatTechnologyResource::collection($technologies);
+    /**
+     * Vote for a WOCAT technology of a project
+     */
+    public function voteWocatTechnology(VoteProjectTechnologyRequest $request, Project $project)
+    {
+        $foundProject = $request->user()->projects()->findOrFail($project->id);
+
+        $foundProposal = $foundProject->technologies()
+                                      ->with('votes')
+                                      ->find($request->project_wocat_slm_technology_id);
+
+        if (!$foundProposal || $foundProposal->status === ProjectWocatTechnology::STATUS_FINAL) {
+            return response()->json(['errors' => [
+                'error' => 'Invalid proposal to vote for.'
+            ]], 422);
+        }
+
+        $foundVote = ProjectWocatTechnologyVote::where('user_id', $request->user()->id)
+            ->where('project_wocat_slm_technology_id', $request->project_wocat_slm_technology_id)
+            ->first();
+
+        if ($foundVote) {
+            return response()->json(['errors' => [
+                'error' => 'You have already voted for this WOCAT technology.'
+            ]], 422);
+        }
+
+        ProjectWocatTechnologyVote::create([
+            'user_id' => $request->user()->id,
+            'project_wocat_slm_technology_id' => $request->project_wocat_slm_technology_id
+        ]);
+
+        // -1 because the person that proposed has already voted for it
+        if (($foundProject->users()->count() - 1) === $foundProposal->votes()->count()) {
+            // All members voted for this proposal so make it final
+            $foundProposal->status = ProjectWocatTechnology::STATUS_FINAL;
+            $foundProposal->save();
+
+            // and delete the votes for this proposal since it's now final
+            $foundProposal->votes()->delete();
+        }
+
+        return new ProjectWocatTechnologyResource($foundProposal);
     }
 }

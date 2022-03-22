@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\ProjectFocusAreas;
+namespace App\Http\Requests\Projects;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListProjectFocusAreasRequest extends FormRequest
+class ProposeProjectTechnologyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,6 +25,10 @@ class ListProjectFocusAreasRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'technology_id' => 'string|required',
+            'project_focus_area_id' => 'integer|required',
+            'lu_class' => 'string|required',
+        ];
     }
 }

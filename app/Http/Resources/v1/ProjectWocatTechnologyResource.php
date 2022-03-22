@@ -17,7 +17,11 @@ class ProjectWocatTechnologyResource extends JsonResource
         return [
             'id' => $this->id,
             'technology_id' => $this->technology_id,
+            'lu_class' => $this->lu_class,
+            'status' => $this->status,
             'user' => new ProjectUserResource($this->whenLoaded('user')),
+            'focus_area' => new ProjectFocusAreaResource($this->whenLoaded('focusArea')),
+            'votes' => ProjectWocatTechnologyVoteResource::collection($this->whenLoaded('votes')),
         ];
     }
 }

@@ -13,9 +13,9 @@ class ShowProjectFocusAreaRequest extends FormRequest
      */
     public function authorize()
     {
-        $isProjectOwner = $this->project->owner->id === $this->user()->id;
+        $isProjectUser = $this->project->users()->where('user_id', $this->user()->id)->exists();
 
-        return $isProjectOwner;
+        return $isProjectUser;
     }
 
     /**
