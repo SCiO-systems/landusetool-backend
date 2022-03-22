@@ -146,7 +146,9 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
                         ->post(env('SCIO_CUSTOM_ROI_HECTARES_SERVICE_URL'), [
                             'project_id' => (string) $project->id,
                             'ROI' => $data['ROI'],
+                            'ROI_file_url' => $data['ROI_file_url'],
                             'polygon' => $data['ROI'],
+                            'polygon_url' => $data['ROI_file_url'],
                         ]);
 
                     // Get the ROI area in hectares.

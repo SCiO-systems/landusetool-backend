@@ -233,6 +233,14 @@ class ScioController extends Controller
 
         $polygonFileContents = Storage::get($polygonFile->path);
 
+        // If there is a roi_file_id append it to data
+        $roiFileUrl = null;
+        if (!empty($project->roi_file_id)) {
+            $roiFileUrl = Storage::url(
+                ProjectFile::find($project->roi_file_id)->path
+            );
+        }
+
         $response = Http::timeout($this->requestTimeout)
             ->withToken($this->lambdaToken)
             ->acceptJson()
@@ -240,6 +248,7 @@ class ScioController extends Controller
             ->post(env('SCIO_CUSTOM_ROI_HECTARES_SERVICE_URL'), [
                 'project_id' => (string) $project->id,
                 'ROI' => $roiPolygon,
+                'ROI_file_url' => $roiFileUrl,
                 'polygon' => json_decode($polygonFileContents),
             ]);
 
