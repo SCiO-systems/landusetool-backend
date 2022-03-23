@@ -305,6 +305,8 @@ class ScioController extends Controller
             })->toArray();
         }
 
+        $preprocessedData = json_decode($project->preprocessing_data);
+
         try {
             $response = Http::timeout($this->requestTimeout)
                 ->withToken($this->lambdaToken)
@@ -315,6 +317,7 @@ class ScioController extends Controller
                     'ROI' => $project->polygon,
                     'ROI_file_url' => $roiFileUrl,
                     'polygons_list' => $polygons_list,
+                    'land_degradation' => $preprocessedData->land_degradation,
                 ])
                 ->throw();
 
