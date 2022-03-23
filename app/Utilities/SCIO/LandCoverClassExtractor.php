@@ -54,6 +54,7 @@ class LandCoverClassExtractor
         $data = [
             'project_id' => (string) $this->project->id,
             'ROI' => $this->ROI,
+            'ROI_file_url' => null,
         ];
 
         // If there is a roi_file_id append it to data
