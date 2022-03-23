@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Cache;
 use App\Models\Project;
 use App\Models\ProjectScenario;
 use App\Http\Controllers\Controller;
@@ -38,6 +39,7 @@ class ProjectScenariosController extends Controller
         $data['content'] = json_encode($request->content);
 
         $scenario = $project->scenarios()->create($data);
+        Cache::forget($project->id . '_ldn_map');
 
         return new ProjectScenarioResource($scenario);
     }
@@ -76,6 +78,7 @@ class ProjectScenariosController extends Controller
         $data['content'] = json_encode($request->content);
 
         $scenario->update($data);
+        Cache::forget($project->id . '_ldn_map');
 
         return new ProjectScenarioResource($scenario);
     }
@@ -93,6 +96,7 @@ class ProjectScenariosController extends Controller
     ) {
         $scenario = $project->scenarios()->findOrFail($scenario->id);
         $scenario->delete();
+        Cache::forget($project->id . '_ldn_map');
 
         return response()->json(null, 204);
     }
@@ -109,6 +113,7 @@ class ProjectScenariosController extends Controller
         ProjectScenario $scenario
     ) {
         $project->scenarios()->delete();
+        Cache::forget($project->id . '_ldn_map');
 
         return response()->json(null, 204);
     }

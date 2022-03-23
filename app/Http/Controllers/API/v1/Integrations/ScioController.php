@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\v1\Integrations;
 use Http;
 use Cache;
 use Storage;
+use Log;
+use Exception;
 use App\Models\Project;
 use App\Models\ProjectFile;
 use App\Http\Controllers\Controller;
@@ -15,6 +17,7 @@ use App\Http\Requests\Integrations\ListLDNTargetsRequest;
 use App\Http\Requests\Integrations\CalculateHectaresRequest;
 use App\Http\Requests\Integrations\GetWocatTechnologiesRequest;
 use App\Http\Requests\Integrations\GetWocatTechnologyRequest;
+use App\Http\Requests\Integrations\PrepareLDNMapRequest;
 use App\Http\Requests\LandCover\GetLandCoverPercentagesRequest;
 use App\Http\Requests\Polygons\GetPolygonsByCoordinatesRequest;
 use App\Http\Requests\Polygons\GetAdminLevelAreaPolygonsRequest;
@@ -263,5 +266,80 @@ class ScioController extends Controller
         }
 
         return response()->json(['hectares' => $hectares]);
+    }
+
+    /**
+     * Prepares the LDN Map
+     */
+    public function prepareLDNMap(PrepareLDNMapRequest $request, Project $project)
+    {
+        $cacheKey = $project->id . '_ldn_map';
+
+        if (Cache::has($cacheKey)) {
+            return response()->json([
+                'data' => ['ldn_map' => Cache::get($cacheKey)]
+            ]);
+        }
+
+        // If there is a roi_file_id append it to data
+        $roiFileUrl = null;
+        if (!empty($project->roi_file_id)) {
+            $roiFileUrl = Storage::url(
+                ProjectFile::find($project->roi_file_id)->path
+            );
+        }
+
+        $polygons_list = [];
+        if (!empty($request->polygons_list)) {
+            $polygons_list = collect($request->polygons_list)->map(function($elm) {
+                $url = Storage::url(
+                    ProjectFile::find($elm['file_id'])->path
+                );
+                return [
+                    'value' => $elm['value'],
+                    'polygon' => null,
+                    'polygon_url' => $url,
+                ];
+            })->filter(function($elm) {
+                return $elm['polygon_url'] !== null;
+            })->toArray();
+        }
+
+        try {
+            $response = Http::timeout($this->requestTimeout)
+                ->withToken($this->lambdaToken)
+                ->acceptJson()
+                ->asJson()
+                ->post(env('SCIO_CUSTOM_LDNMAP_SERVICE_URL'), [
+                    'project_id' => (string) $project->id,
+                    'ROI' => $project->polygon,
+                    'ROI_file_url' => $roiFileUrl,
+                    'polygons_list' => $polygons_list,
+                ])
+                ->throw();
+
+            $data = $response->json();
+            if ($response->ok() && array_key_exists('ldn_map', $data)) {
+                if ($response->ok()) {
+                    Cache::put($cacheKey, $data['ldn_map'], $this->cacheTtl);
+                }
+
+                return response()->json([
+                    'data' => ['ldn_map' => $data['ldn_map']]
+                ]);
+            } else {
+                throw new Exception('LDN map link was not found in the response');
+            }
+        } catch (Exception $ex) {
+            Log::error('Failed to prepare LDN map with the given input.', [
+                'project_id' => (string) $project->id,
+                'ROI' => $project->polygon,
+                'ROI_file_url' => $roiFileUrl,
+                'polygons_list' => $polygons_list,
+                'error' => $ex->getMessage()
+            ]);
+        }
+
+        return response()->json(['message' => 'Failed to generate LDN map with the given input.'], 500);
     }
 }

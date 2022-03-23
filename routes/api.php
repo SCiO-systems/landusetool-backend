@@ -85,6 +85,11 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ProjectsController::class, 'voteWocatTechnology'
         ])->name('projects.vote_wocat_technology');
 
+        // Get the LDN Map for a project based on input polygons
+        Route::post('projects/{project}/prepare_ldn_map', [
+            ScioController::class, 'prepareLDNMap'
+        ])->name('projects.prepare_ldn_map');
+
         // Project management.
         Route::apiResource('projects', ProjectsController::class);
 
