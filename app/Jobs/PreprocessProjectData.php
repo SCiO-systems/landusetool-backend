@@ -72,7 +72,8 @@ class PreprocessProjectData implements ShouldQueue, ShouldBeUnique
 
             $data = [
                 'project_id' => (string) $project->id,
-                'ROI' => json_decode($project->polygon, true)
+                'ROI' => json_decode($project->polygon, true),
+                'ROI_file_url' => null,
             ];
 
             // If there is a roi_file_id append it to data
