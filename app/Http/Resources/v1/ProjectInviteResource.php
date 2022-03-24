@@ -16,7 +16,7 @@ class ProjectInviteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'inviter' => new UserResource($this->project->owner()),
+            'inviter' => new UserResource($this->project->owner),
             'project' => new ProjectResource($this->project),
             'status' => $this->status,
         ];
