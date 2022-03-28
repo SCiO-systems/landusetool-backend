@@ -314,7 +314,7 @@ class ScioController extends Controller
                 ->asJson()
                 ->post(env('SCIO_CUSTOM_LDNMAP_SERVICE_URL'), [
                     'project_id' => (string) $project->id,
-                    'ROI' => $project->polygon,
+                    'ROI' => json_decode($project->polygon, true),
                     'ROI_file_url' => $roiFileUrl,
                     'polygons_list' => $polygons_list,
                     'land_degradation' => $preprocessedData->land_degradation,
@@ -336,7 +336,7 @@ class ScioController extends Controller
         } catch (Exception $ex) {
             Log::error('Failed to prepare LDN map with the given input.', [
                 'project_id' => (string) $project->id,
-                'ROI' => $project->polygon,
+                'ROI' => json_decode($project->polygon, true),
                 'ROI_file_url' => $roiFileUrl,
                 'polygons_list' => $polygons_list,
                 'error' => $ex->getMessage()
