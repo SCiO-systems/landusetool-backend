@@ -29,6 +29,14 @@ class ProposeProjectTechnologyRequest extends FormRequest
             'technology_id' => 'string|required',
             'project_focus_area_id' => 'integer|required',
             'lu_class' => 'string|required',
+            'soil_value' => 'required|integer',
+            'water_value' => 'required|integer',
+            'biodiversity_value' => 'required|integer',
+            'climate_change_resilience_value' => 'required|integer',
+            'production_value' => 'required|integer',
+            'economic_viability_value' => 'required|integer',
+            'food_security_value' => 'required|integer',
+            'equality_of_opportunity_value' => 'required|integer',
         ];
     }
 }

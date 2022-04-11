@@ -32,6 +32,11 @@ class ProjectWocatTechnology extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function evaluation()
+    {
+        return $this->hasOne(ProjectFocusAreaEvaluation::class, 'for_slm_proposal');
+    }
+
     public function focusArea()
     {
         return $this->belongsTo(ProjectFocusArea::class, 'project_focus_area_id');

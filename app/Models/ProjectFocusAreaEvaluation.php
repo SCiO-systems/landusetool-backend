@@ -29,4 +29,9 @@ class ProjectFocusAreaEvaluation extends Model
         return $this->belongsTo(ProjectFocusArea::class);
     }
 
+    public function slmProposal()
+    {
+        return $this->belongsTo(ProjectWocatTechnology::class, 'for_slm_proposal');
+    }
+
 }

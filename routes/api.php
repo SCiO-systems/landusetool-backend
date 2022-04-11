@@ -85,6 +85,11 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ProjectsController::class, 'voteWocatTechnology'
         ])->name('projects.vote_wocat_technology');
 
+        // Reject a WOCAT technology.
+        Route::post('projects/{project}/reject_wocat_technology', [
+            ProjectsController::class, 'rejectWocatTechnology'
+        ])->name('projects.reject_wocat_technology');
+
         // Get the LDN Map for a project based on input polygons
         Route::post('projects/{project}/prepare_ldn_map', [
             ScioController::class, 'prepareLDNMap'

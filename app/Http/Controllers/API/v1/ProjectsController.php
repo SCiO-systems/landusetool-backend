@@ -19,6 +19,8 @@ use App\Http\Resources\v1\ProjectWocatTechnologyResource;
 use App\Http\Requests\Projects\ProposeProjectTechnologyRequest;
 use App\Http\Requests\Projects\ListProjectTechnologiesRequest;
 use App\Http\Requests\Projects\VoteProjectTechnologyRequest;
+use App\Http\Requests\Projects\RejectProjectTechnologyRequest;
+use App\Models\ProjectFocusAreaEvaluation;
 use App\Models\ProjectWocatTechnologyVote;
 
 class ProjectsController extends Controller
@@ -227,7 +229,7 @@ class ProjectsController extends Controller
     public function getWocatTechnologies(ListProjectTechnologiesRequest $request, Project $project)
     {
         $technologies = $project->technologies()
-                                ->with(['user', 'focusArea']);
+                                ->with(['user', 'focusArea', 'evaluation']);
 
         if (!empty($request->status)) {
             $technologies = $technologies->where('status', $request->status);
@@ -269,8 +271,8 @@ class ProjectsController extends Controller
             // if there's only 1 user for this project make the proposal final
             $status = ProjectWocatTechnology::STATUS_FINAL;
         }
-
-        ProjectWocatTechnology::create([
+        
+        $proposal = ProjectWocatTechnology::create([
             'user_id' => $request->user()->id,
             'project_id' => $project->id,
             'project_focus_area_id' => $request->project_focus_area_id,
@@ -278,8 +280,54 @@ class ProjectsController extends Controller
             'status' => $status,
             'technology_id' => $request->technology_id,
         ]);
+        
+        // Create the evaluation for this proposal
+        ProjectFocusAreaEvaluation::create([
+            'user_id' => $request->user()->id,
+            'project_focus_area_id' => $request->project_focus_area_id,
+            'lu_class' => $request->lu_class,
+            'soil_value' => $request->soil_value,
+            'water_value' => $request->water_value,
+            'biodiversity_value' => $request->biodiversity_value,
+            'climate_change_resilience_value' => $request->climate_change_resilience_value,
+            'production_value' => $request->production_value,
+            'economic_viability_value' => $request->economic_viability_value,
+            'food_security_value' => $request->food_security_value,
+            'equality_of_opportunity_value' => $request->equality_of_opportunity_value,
+            'for_slm_proposal' => $proposal->id,
+        ]);
 
         return response()->json(null, 201);
+    }
+    
+/**
+     * Vote for a WOCAT technology of a project
+     */
+    public function rejectWocatTechnology(RejectProjectTechnologyRequest $request, Project $project)
+    {
+        $foundProject = $request->user()->projects()->findOrFail($project->id);
+
+        $foundProposal = $foundProject->technologies()
+                                      ->with('votes', 'evaluation')
+                                      ->find($request->project_wocat_slm_technology_id);
+
+        if (!$foundProposal || $foundProposal->status === ProjectWocatTechnology::STATUS_FINAL) {
+            return response()->json(['errors' => [
+                'error' => 'Proposal is already in a final state and can\'t be changed.',
+            ]], 422);
+        }
+
+        // We delete the proposal even if the rejection comes from 1 person:
+        
+        // 1. delete the relevant evaluation
+        if ($foundProposal->evaluation) {
+            $foundProposal->evaluation->delete();
+        }
+
+        // 2. delete the proposal
+        $foundProposal->delete();
+        
+        return response()->json(null, 204);
     }
 
     /**
