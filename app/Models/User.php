@@ -34,12 +34,17 @@ class User extends Authenticatable implements JWTSubject
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class, 'project_user', 'user_id', 'project_id');
+        return $this->belongsToMany(Project::class, 'project_user', 'user_id', 'project_id')
+            ->withPivot('role');
     }
 
     public function invites()
     {
-        return $this->belongsToMany(ProjectInvite::class, 'project_invite', 'user_id', 'project_id')
-            ->wherePivot('status', '=', ProjectInvite::STATUS_PENDING);
+        return $this->hasMany(ProjectInvite::class)->where('status', ProjectInvite::STATUS_PENDING);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
     }
 }

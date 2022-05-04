@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Projects;
 
-use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ShowProjectRequest extends FormRequest
@@ -14,10 +13,8 @@ class ShowProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        $isProjectUser = Auth::user()
-            ->projects()
-            ->where('project_id', $this->project->id)
-            ->exists();
+        $isProjectUser = $this->project->users()->where('user_id', $this->user()->id)->exists();
+
         return $isProjectUser;
     }
 

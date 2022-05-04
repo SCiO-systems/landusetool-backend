@@ -11,9 +11,6 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected $defaultOrder = 'asc';
-    protected $defaultOrderBy = 'name';
-
     public function default()
     {
         return response(view('default'), 200);

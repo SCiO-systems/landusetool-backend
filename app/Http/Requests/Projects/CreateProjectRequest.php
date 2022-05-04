@@ -26,7 +26,7 @@ class CreateProjectRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'acronym' => 'nullable|string',
+            'acronym' => 'required|string|max:50',
             'description' => 'nullable|string',
         ];
     }

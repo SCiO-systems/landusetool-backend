@@ -16,7 +16,7 @@ class UpdateInviteRequest extends FormRequest
      */
     public function authorize()
     {
-        $inviteBelongsToUser = $this->invite->user_id == Auth::user()->id;
+        $inviteBelongsToUser = $this->invite->user_id == $this->user()->id;
         $inviteIsPending = $this->invite->status == ProjectInvite::STATUS_PENDING;
         return Auth::check() && $inviteBelongsToUser && $inviteIsPending;
     }
