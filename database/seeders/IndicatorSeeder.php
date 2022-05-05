@@ -17,7 +17,7 @@ class IndicatorSeeder extends Seeder
         Indicator::truncate();
 
         $ecologicalImpacts = Indicator::create([
-            'name' => 'Ecological Impacts',
+            'name' => 'Impacts on Ecosystem Services',
         ]);
 
         $soil = Indicator::create([
@@ -149,7 +149,7 @@ class IndicatorSeeder extends Seeder
         ]);
 
         $biodiversity = Indicator::create([
-            'name' => 'Biodiversity',
+            'name' => 'Biological Resources',
             'parent_indicator_id' => $ecologicalImpacts->id,
         ]);
 
@@ -288,7 +288,7 @@ class IndicatorSeeder extends Seeder
         ]);
 
         $socioEconomicImpacts = Indicator::create([
-            'name' => 'Socio-economic Impacts',
+            'name' => 'Economic Impacts',
         ]);
 
         $production = Indicator::create([
@@ -425,13 +425,6 @@ class IndicatorSeeder extends Seeder
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'name' => 'Reduced economic disparities',
-                'transferable' => true,
-                'parent_indicator_id' => $economicViability->id,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
                 'name' => 'Reduced workload',
                 'transferable' => true,
                 'parent_indicator_id' => $economicViability->id,
@@ -519,6 +512,12 @@ class IndicatorSeeder extends Seeder
         Indicator::insert([
             [
                 'name' => 'Social adoption of SLM technology, innovations',
+                'transferable' => true,
+                'parent_indicator_id' => $equalityOfOpportunity->id,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ], [
+                'name' => 'Reduced economic disparities',
                 'transferable' => true,
                 'parent_indicator_id' => $equalityOfOpportunity->id,
                 'created_at' => date('Y-m-d H:i:s'),
