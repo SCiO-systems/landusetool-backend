@@ -6,10 +6,6 @@ The LUP4LDN project.
 
 The project requires **[PHP 7.4/8.0](https://www.php.net/manual/en/install.php)** as well as **[Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)** to be installed.
 
-## CLONE THE REPOSITORY
-
-    git clone git@github.com:NoeticBlue/scio-lup4ldn-backend.git
-
 ## INSTALL THE DEPENDENCIES
 
     cd scio-lup4ldn-backend && composer install
