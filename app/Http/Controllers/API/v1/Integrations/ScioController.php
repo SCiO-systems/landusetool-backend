@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API\v1\Integrations;
 
+use Log;
 use Http;
 use Cache;
 use Storage;
-use Log;
 use Exception;
 use App\Models\Project;
 use App\Models\ProjectFile;
@@ -13,12 +13,11 @@ use App\Http\Controllers\Controller;
 use App\Utilities\SCIO\TokenGenerator;
 use App\Utilities\SCIO\WocatTransformer;
 use App\Utilities\SCIO\AWSTokenGenerator;
+use App\Http\Requests\Integrations\PrepareLDNMapRequest;
 use App\Http\Requests\Integrations\ListLDNTargetsRequest;
 use App\Http\Requests\Integrations\CalculateHectaresRequest;
-use App\Http\Requests\Integrations\GetWocatTechnologiesRequest;
 use App\Http\Requests\Integrations\GetWocatTechnologyRequest;
-use App\Http\Requests\Integrations\PrepareLDNMapRequest;
-use App\Http\Requests\LandCover\GetLandCoverPercentagesRequest;
+use App\Http\Requests\Integrations\GetWocatTechnologiesRequest;
 use App\Http\Requests\Polygons\GetPolygonsByCoordinatesRequest;
 use App\Http\Requests\Polygons\GetAdminLevelAreaPolygonsRequest;
 
@@ -129,34 +128,6 @@ class ScioController extends Controller
         $polygon = $response->json();
 
         return response()->json($polygon, $response->status());
-    }
-
-    public function getLandCoverPercentages(
-        GetLandCoverPercentagesRequest $request,
-        Project $project
-    ) {
-        $mostRecentYear = $request->most_recent_year;
-        $country = $project->country_iso_code_3;
-
-        $landCover7Url = data_get(json_decode($project->tif_images), 'land_cover_7');
-        $parts = explode('/', $landCover7Url);
-        $length = count($parts);
-
-        $identifier = $parts[$length - 2];
-        $filename = $parts[$length - 1];
-
-        $response = Http::timeout($this->requestTimeout)
-            ->withToken($this->token)
-            ->acceptJson()
-            ->asJson()
-            ->post("$this->baseURI/landcoverPercentagesByROI", [
-                'identifier' => $identifier,
-                'filename' => $filename,
-                'most_recent_year' => $mostRecentYear,
-                'country_ISO' => $country,
-            ]);
-
-        return response()->json($response->json(), $response->status());
     }
 
     public function getWocatTechnologies(GetWocatTechnologiesRequest $request)
@@ -291,7 +262,7 @@ class ScioController extends Controller
 
         $polygons_list = [];
         if (!empty($request->polygons_list)) {
-            $polygons_list = collect($request->polygons_list)->map(function($elm) {
+            $polygons_list = collect($request->polygons_list)->map(function ($elm) {
                 $url = Storage::url(
                     ProjectFile::find($elm['file_id'])->path
                 );
@@ -300,7 +271,7 @@ class ScioController extends Controller
                     'polygon' => null,
                     'polygon_url' => $url,
                 ];
-            })->filter(function($elm) {
+            })->filter(function ($elm) {
                 return $elm['polygon_url'] !== null;
             })->toArray();
         }
@@ -344,5 +315,25 @@ class ScioController extends Controller
         }
 
         return response()->json(['message' => 'Failed to generate LDN map with the given input.'], 500);
+    }
+
+    public function getEconWocatTechnology(GetWocatTechnologyRequest $request, $techId)
+    {
+        $response = Http::timeout($this->requestTimeout)
+            ->withToken($this->token)
+            ->acceptJson()
+            ->asJson()
+            ->get("$this->baseURI/econwocat/$techId");
+
+        if ($response->ok()) {
+            $data = (object) $response->json('data.0._source');
+        }
+
+        return response()->json(
+            ['data' => $data],
+            $response->status(),
+            [],
+            JSON_UNESCAPED_SLASHES
+        );
     }
 }

@@ -65,11 +65,6 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
             ScioController::class, 'getIntersectingArea'
         ])->name('projects.polygons.intersecting_area');
 
-        // Land cover.
-        Route::get('projects/{project}/land_cover_percentages', [
-            ScioController::class, 'getLandCoverPercentages'
-        ])->name('projects.land_cover_percentages');
-
         // Project proposed or final wocat technologies.
         Route::get('projects/{project}/wocat_technologies', [
             ProjectsController::class, 'getWocatTechnologies'
@@ -156,6 +151,10 @@ Route::prefix('v1')->name('api.v1.')->middleware('request.log')->group(function 
         // WOCAT TECHNOLOGIES
         Route::get('/wocat_technologies', [ScioController::class, 'getWocatTechnologies'])
             ->name('wocat_technologies');
+        Route::get('/wocat_technologies/{techId}/econ_wocat', [
+            ScioController::class,
+            'getEconWocatTechnology'
+        ])->name('econ_wocat_technologies.show');
         Route::get('/wocat_technologies/{techId}', [ScioController::class, 'getWocatTechnology'])
             ->name('wocat_technologies.show');
 

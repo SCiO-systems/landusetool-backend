@@ -128,33 +128,7 @@ class ProjectsController extends Controller
             // If the user has sent a polygon.
             if (!empty($request->polygon)) {
                 $project->setPolygon($request->polygon);
-
-                $coordinates = data_get($request->polygon, 'features.0.geometry.coordinates');
-                $identifier = (new CoordsIDGenerator($coordinates))->getId();
-
-                $body = [
-                    'identifier'    => $identifier,
-                    'project_id'    => $identifier,
-                    'country_ISO'   => $request->country_iso_code_3,
-                    'area'          => $request->polygon,
-                ];
-
-                $response = Http::timeout($this->requestTimeout)
-                    ->withToken($this->token)
-                    ->acceptJson()
-                    ->asJson()
-                    ->post("$this->baseURI/tifCropperByROI", $body);
-
-                if ($response->failed()) {
-                    return response()->json([
-                        'error' => 'Failed to contact remote service for generating TIF images.'
-                    ], $response->status());
-                }
-
-                if ($response->ok()) {
-                    $project->tif_images = $response->json();
-                    $project->save();
-                }
+                $project->save();
             }
         }
 
@@ -229,7 +203,7 @@ class ProjectsController extends Controller
     public function getWocatTechnologies(ListProjectTechnologiesRequest $request, Project $project)
     {
         $technologies = $project->technologies()
-                                ->with(['user', 'focusArea', 'evaluation']);
+            ->with(['user', 'focusArea', 'evaluation']);
 
         if (!empty($request->status)) {
             $technologies = $technologies->where('status', $request->status);
@@ -256,9 +230,9 @@ class ProjectsController extends Controller
         $foundProject = $request->user()->projects()->findOrFail($project->id);
 
         $foundProposal = $foundProject->technologies()
-                                      ->where('project_focus_area_id', $request->project_focus_area_id)
-                                      ->where('lu_class', $request->lu_class)
-                                      ->first();
+            ->where('project_focus_area_id', $request->project_focus_area_id)
+            ->where('lu_class', $request->lu_class)
+            ->first();
 
         if ($foundProposal) {
             return response()->json(['errors' => [
@@ -271,7 +245,7 @@ class ProjectsController extends Controller
             // if there's only 1 user for this project make the proposal final
             $status = ProjectWocatTechnology::STATUS_FINAL;
         }
-        
+
         $proposal = ProjectWocatTechnology::create([
             'user_id' => $request->user()->id,
             'project_id' => $project->id,
@@ -280,7 +254,7 @@ class ProjectsController extends Controller
             'status' => $status,
             'technology_id' => $request->technology_id,
         ]);
-        
+
         // Create the evaluation for this proposal
         ProjectFocusAreaEvaluation::create([
             'user_id' => $request->user()->id,
@@ -299,8 +273,8 @@ class ProjectsController extends Controller
 
         return response()->json(null, 201);
     }
-    
-/**
+
+    /**
      * Vote for a WOCAT technology of a project
      */
     public function rejectWocatTechnology(RejectProjectTechnologyRequest $request, Project $project)
@@ -308,8 +282,8 @@ class ProjectsController extends Controller
         $foundProject = $request->user()->projects()->findOrFail($project->id);
 
         $foundProposal = $foundProject->technologies()
-                                      ->with('votes', 'evaluation')
-                                      ->find($request->project_wocat_slm_technology_id);
+            ->with('votes', 'evaluation')
+            ->find($request->project_wocat_slm_technology_id);
 
         if (!$foundProposal || $foundProposal->status === ProjectWocatTechnology::STATUS_FINAL) {
             return response()->json(['errors' => [
@@ -318,7 +292,7 @@ class ProjectsController extends Controller
         }
 
         // We delete the proposal even if the rejection comes from 1 person:
-        
+
         // 1. delete the relevant evaluation
         if ($foundProposal->evaluation) {
             $foundProposal->evaluation->delete();
@@ -326,7 +300,7 @@ class ProjectsController extends Controller
 
         // 2. delete the proposal
         $foundProposal->delete();
-        
+
         return response()->json(null, 204);
     }
 
@@ -338,8 +312,8 @@ class ProjectsController extends Controller
         $foundProject = $request->user()->projects()->findOrFail($project->id);
 
         $foundProposal = $foundProject->technologies()
-                                      ->with('votes')
-                                      ->find($request->project_wocat_slm_technology_id);
+            ->with('votes')
+            ->find($request->project_wocat_slm_technology_id);
 
         if (!$foundProposal || $foundProposal->status === ProjectWocatTechnology::STATUS_FINAL) {
             return response()->json(['errors' => [

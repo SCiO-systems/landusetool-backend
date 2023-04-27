@@ -4,11 +4,11 @@ namespace App\Http\Controllers\API\v1;
 
 use Log;
 use App\Models\Project;
-use App\Models\ProjectFocusArea;
 use App\Models\ProjectFile;
+use App\Models\ProjectFocusArea;
 use App\Http\Controllers\Controller;
-use App\Utilities\SCIO\LandCoverClassExtractor;
 use Illuminate\Support\Facades\Storage;
+use App\Utilities\SCIO\LandCoverClassExtractor;
 use App\Http\Resources\v1\ProjectFocusAreaResource;
 use App\Http\Requests\ProjectFocusAreas\ShowProjectFocusAreaRequest;
 use App\Http\Requests\ProjectFocusAreas\ListProjectFocusAreasRequest;

@@ -85,6 +85,10 @@ class WocatTransformer
                     'section_specifications.tech__2.tech__2__6.tech_qg_160.tech_implementation_decades.value.0.values.0.0'
                 ),
                 'images' => $images,
+                'econ_wocat' => data_get(
+                    $item,
+                    'econ_wocat',
+                ),
             ];
         }
 
